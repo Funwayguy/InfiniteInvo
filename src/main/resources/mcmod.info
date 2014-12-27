@@ -1,0 +1,16 @@
+[
+{
+  "modid": "infiniteinvo",
+  "name": "InfiniteInvo",
+  "description": "Set your inventory as big as you like",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Funwayguy","Bacon_Donut"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
