@@ -2,13 +2,13 @@
 {
   "modid": "infiniteinvo",
   "name": "InfiniteInvo",
-  "description": "Set your inventory as big as you like",
+  "description": "Set your inventory as big as you like or at least until Java runs out of memory at ~2.14 BILLION SLOTS!",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["Funwayguy","Bacon_Donut"],
-  "credits": "",
+  "credits": "Thank's Siyliss siyLove",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
