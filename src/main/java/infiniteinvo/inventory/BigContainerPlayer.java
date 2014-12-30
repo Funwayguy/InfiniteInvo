@@ -70,7 +70,13 @@ public class BigContainerPlayer extends ContainerPlayer
             	} else
             	{
             		// Moved off screen to avoid interaction until screen scrolls over the row
-            		Slot ns = new Slot(invo, j + (i + 1) * 9, -99, -99);
+            		Slot ns = new Slot(invo, j + (i + 1) * 9, -99, -99)
+            		{
+            			public boolean isItemValid(ItemStack p_75214_1_)
+            		    {
+            		        return ((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotNumber - 9;
+            		    }
+            		};
             		slots[j + (i * 9)] = ns;
             		this.addSlotToContainer(ns);
             	}
@@ -101,7 +107,7 @@ public class BigContainerPlayer extends ContainerPlayer
             		break;
             	} else
             	{
-            		if(i >= scrollPos && i < scrollPos + 3 + II_Settings.extraRows && j + i * (9 + II_Settings.extraColumns) < invo.getUnlockedSlots() - 9)
+            		if(i >= scrollPos && i < scrollPos + 3 + II_Settings.extraRows /*&& j + i * (9 + II_Settings.extraColumns) < invo.getUnlockedSlots() - 9*/)
             		{
             			Slot s = slots[j + (i * (9 + II_Settings.extraColumns))];
             			s.xDisplayPosition = 8 + j * 18;
