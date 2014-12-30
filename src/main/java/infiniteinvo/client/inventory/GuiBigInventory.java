@@ -18,6 +18,7 @@ public class GuiBigInventory extends GuiInventory
 {
 	BigContainerPlayer container;
 	GuiButton unlock;
+	public boolean redoButtons = false;
 	
 	public GuiBigInventory(EntityPlayer player)
 	{
@@ -84,6 +85,30 @@ public class GuiBigInventory extends GuiInventory
         this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 137 + (II_Settings.extraRows * 18), 187, 137, 16, 29);
         
         func_147046_a(k + 51, l + 75, 30, (float)(k + 51) - (float)p_146976_2_, (float)(l + 75 - 50) - (float)p_146976_3_, this.mc.thePlayer);
+        
+        if(redoButtons)
+        {
+			for(int i = 1; i < buttonList.size(); i++)
+			{
+				GuiButton button = (GuiButton)buttonList.get(i);
+				
+				if(button.xPosition > this.width/2)
+				{
+					button.xPosition += (II_Settings.extraColumns * 9) + 4;
+				} else if(button.xPosition < this.width/2)
+				{
+					button.xPosition -= (II_Settings.extraColumns * 9) + 4;
+				}
+				
+				if(button.yPosition > this.height/2)
+				{
+					button.yPosition += (II_Settings.extraRows * 9);
+				} else if(button.xPosition < this.height/2)
+				{
+					button.yPosition -= (II_Settings.extraRows * 9);
+				}
+			}
+        }
 	}
 	
 	@Override

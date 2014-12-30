@@ -14,12 +14,14 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -111,6 +113,16 @@ public class EventHandler
 		if(event.gui instanceof GuiInventory && !(event.gui instanceof GuiBigInventory))
 		{
 			event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onGuiPostInit(InitGuiEvent.Post event)
+	{
+		if(event.gui instanceof GuiBigInventory)
+		{
+			((GuiBigInventory)event.gui).redoButtons = true;
 		}
 	}
 	
