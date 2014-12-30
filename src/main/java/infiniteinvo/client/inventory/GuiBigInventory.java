@@ -88,6 +88,7 @@ public class GuiBigInventory extends GuiInventory
         
         if(redoButtons)
         {
+        	redoButtons = false;
 			for(int i = 1; i < buttonList.size(); i++)
 			{
 				GuiButton button = (GuiButton)buttonList.get(i);
@@ -103,7 +104,7 @@ public class GuiBigInventory extends GuiInventory
 				if(button.yPosition > this.height/2)
 				{
 					button.yPosition += (II_Settings.extraRows * 9);
-				} else if(button.xPosition < this.height/2)
+				} else if(button.yPosition < this.height/2)
 				{
 					button.yPosition -= (II_Settings.extraRows * 9);
 				}
