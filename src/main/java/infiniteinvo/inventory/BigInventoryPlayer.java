@@ -29,7 +29,7 @@ public class BigInventoryPlayer extends InventoryPlayer
 	{
 		int unlocked = II_Settings.unlockedSlots + 9 + this.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
 		
-		unlocked = unlocked < this.mainInventory.length? unlocked : this.mainInventory.length - 1;
+		unlocked = unlocked <= this.mainInventory.length? unlocked : this.mainInventory.length;
 		
 		return unlocked;
 	}

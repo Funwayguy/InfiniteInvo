@@ -1,6 +1,7 @@
 package infiniteinvo.core;
 
 import org.apache.logging.log4j.Logger;
+import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.core.proxies.CommonProxy;
 import infiniteinvo.handlers.ConfigHandler;
 import infiniteinvo.network.InvoPacket;
@@ -42,6 +43,8 @@ public class InfiniteInvo
     	ConfigHandler.initConfigs(event.getSuggestedConfigurationFile());
     	
     	proxy.registerHandlers();
+    	
+    	InvoAchievements.InitAchievements();
     }
     
     @EventHandler

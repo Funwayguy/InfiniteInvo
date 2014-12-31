@@ -134,7 +134,7 @@ public class EventHandler
 				}
 			}
 			
-			if(!flag)
+			if(flag)
 			{
 				player.addStat(InvoAchievements.bacon, 1);
 			}
