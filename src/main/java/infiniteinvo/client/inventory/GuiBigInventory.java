@@ -35,8 +35,8 @@ public class GuiBigInventory extends GuiInventory
 	{
 		super.initGui();
 		unlock = new GuiButton(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, "");
-		unlock.enabled = this.container.invo.player.experienceTotal >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
-		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceTotal + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
+		unlock.enabled = this.container.invo.player.experienceLevel >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
+		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceLevel + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
 		unlock.visible = II_Settings.xpUnlock;
 		this.buttonList.add(unlock);
 	}
@@ -220,8 +220,8 @@ public class GuiBigInventory extends GuiInventory
         	}
         	
         	container.UpdateScroll();
-    		unlock.enabled = this.container.invo.player.experienceTotal >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
-    		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceTotal + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
+    		unlock.enabled = this.container.invo.player.experienceLevel >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
+    		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceLevel + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
     		unlock.visible = II_Settings.xpUnlock;
     	}
     }

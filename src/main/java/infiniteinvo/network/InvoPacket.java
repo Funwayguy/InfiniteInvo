@@ -55,11 +55,11 @@ public class InvoPacket implements IMessage
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
-					if(player.experienceTotal >= (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)))
+					if(player.experienceLevel >= (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)))
 					{
 						int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") + 1;
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
-						player.addExperience(-(II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)));
+						player.addExperienceLevel(-(II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)));
 						
 						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
 						
