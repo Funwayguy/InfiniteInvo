@@ -167,10 +167,10 @@ public class EventHandler
 	@SubscribeEvent
 	public void onGuiPostInit(InitGuiEvent.Post event)
 	{
-		/*if(event.gui instanceof GuiBigInventory)
+		if(event.gui instanceof GuiBigInventory)
 		{
 			((GuiBigInventory)event.gui).redoButtons = true;
-		} else if(event.gui instanceof GuiContainer)
+		} /*else if(event.gui instanceof GuiContainer)
 		{
 			GuiContainer gui = (GuiContainer)event.gui;
 			Container container = gui.inventorySlots;
