@@ -1,22 +1,23 @@
 package infiniteinvo.network;
 
-import org.apache.logging.log4j.Level;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.WorldServer;
+import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.handlers.EventHandler;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.WorldServer;
+import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 
 public class InvoPacket implements IMessage
 {
@@ -54,13 +55,23 @@ public class InvoPacket implements IMessage
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
-					if(player.experienceLevel >= II_Settings.unlockCost)
+					if(player.experienceTotal >= (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)))
 					{
 						int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") + 1;
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
-						player.addExperienceLevel(-II_Settings.unlockCost);
+						player.addExperience(-(II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)));
 						
 						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
+						
+						if(unlocked > 0 || !II_Settings.xpUnlock)
+						{
+							player.addStat(InvoAchievements.unlockFirst, 1);
+						}
+						
+						if(unlocked + II_Settings.unlockedSlots == II_Settings.invoSize || !II_Settings.xpUnlock)
+						{
+							player.addStat(InvoAchievements.unlockAll, 1);
+						}
 						
 						NBTTagCompound replyTags = new NBTTagCompound();
 						replyTags.setInteger("ID", 0);
@@ -86,17 +97,55 @@ public class InvoPacket implements IMessage
 						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
 					}
 					
+					if(unlocked > 0 || !II_Settings.xpUnlock)
+					{
+						player.addStat(InvoAchievements.unlockFirst, 1);
+					}
+					
+					if(unlocked + II_Settings.unlockedSlots == II_Settings.invoSize || !II_Settings.xpUnlock)
+					{
+						player.addStat(InvoAchievements.unlockAll, 1);
+					}
+					
 					NBTTagCompound reply = new NBTTagCompound();
 					reply.setInteger("ID", 0);
 					reply.setString("Player", player.getCommandSenderName());
 					reply.setInteger("Unlocked", unlocked);
 					reply.setTag("Settings", II_Settings.cachedSettings);
 					return new InvoPacket(reply);
+				} else if(message.tags.getInteger("ID") == 2) // Experimental and unused
+				{
+					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
+					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
+					int scrollPos = message.tags.getInteger("Scroll");
+					
+					Slot[] invoSlots = new Slot[27];
+					Container container = player.openContainer;
+					
+					int index = 0;
+					for(int i = 0; i < container.inventorySlots.size() && index < 27; i++)
+					{
+						Slot s = (Slot)container.inventorySlots.get(i);
+						
+						if(s.inventory instanceof InventoryPlayer && s.slotNumber >= 9 && !(s.slotNumber >= 36 && s.slotNumber < 45))
+						{
+							invoSlots[index] = s;
+							index++;
+						}
+					}
+					
+					for(int i = 0; i < invoSlots.length; i++)
+					{
+						Slot s = invoSlots[i];
+						s.slotNumber = (i + 9) + (scrollPos * 9);
+						s.onSlotChanged();
+					}
+					
+					container.detectAndSendChanges();
 				}
 			}
 			return null;
 		}
-		
 	}
 	
 	public static class HandleClient implements IMessageHandler<InvoPacket,IMessage>

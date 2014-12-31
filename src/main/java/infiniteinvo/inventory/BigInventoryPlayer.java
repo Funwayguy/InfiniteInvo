@@ -27,7 +27,11 @@ public class BigInventoryPlayer extends InventoryPlayer
 	
 	public int getUnlockedSlots()
 	{
-		return II_Settings.unlockedSlots + 9 + this.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
+		int unlocked = II_Settings.unlockedSlots + 9 + this.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
+		
+		unlocked = unlocked < this.mainInventory.length? unlocked : this.mainInventory.length - 1;
+		
+		return unlocked;
 	}
 	
     private int func_146029_c(Item p_146029_1_)
@@ -350,7 +354,7 @@ public class BigInventoryPlayer extends InventoryPlayer
     {
         this.mainInventory = new ItemStack[II_Settings.invoSize + 9];
         this.armorInventory = new ItemStack[4];
-
+        
         for (int i = 0; i < p_70443_1_.tagCount(); ++i)
         {
             NBTTagCompound nbttagcompound = p_70443_1_.getCompoundTagAt(i);
@@ -364,9 +368,9 @@ public class BigInventoryPlayer extends InventoryPlayer
                     this.mainInventory[j] = itemstack;
                 }
 
-                if (j >= 100 && j < this.armorInventory.length + 100)
+                if (j >= (Integer.MAX_VALUE - 100) && j <= Integer.MAX_VALUE)
                 {
-                    this.armorInventory[j - 100] = itemstack;
+                    this.armorInventory[j - (Integer.MAX_VALUE - 100)] = itemstack;
                 }
             }
         }

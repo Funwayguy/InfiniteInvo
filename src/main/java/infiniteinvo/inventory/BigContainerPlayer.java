@@ -107,7 +107,7 @@ public class BigContainerPlayer extends ContainerPlayer
             		break;
             	} else
             	{
-            		if(i >= scrollPos && i < scrollPos + 3 + II_Settings.extraRows /*&& j + i * (9 + II_Settings.extraColumns) < invo.getUnlockedSlots() - 9*/)
+            		if(i >= scrollPos && i < scrollPos + 3 + II_Settings.extraRows && j + i * (9 + II_Settings.extraColumns) < invo.getUnlockedSlots() - 9)
             		{
             			Slot s = slots[j + (i * (9 + II_Settings.extraColumns))];
             			s.xDisplayPosition = 8 + j * 18;

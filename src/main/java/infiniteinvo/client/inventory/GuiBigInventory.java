@@ -5,12 +5,14 @@ import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
 import infiniteinvo.network.InvoPacket;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -33,8 +35,8 @@ public class GuiBigInventory extends GuiInventory
 	{
 		super.initGui();
 		unlock = new GuiButton(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, "");
-		unlock.enabled = this.container.invo.player.experienceLevel >= II_Settings.unlockCost && II_Settings.xpUnlock;
-		unlock.displayString = unlock.enabled? "Unlock Slot" : this.container.invo.player.experienceLevel + " / " + II_Settings.unlockCost + " XP";
+		unlock.enabled = this.container.invo.player.experienceTotal >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
+		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceTotal + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
 		unlock.visible = II_Settings.xpUnlock;
 		this.buttonList.add(unlock);
 	}
@@ -66,14 +68,19 @@ public class GuiBigInventory extends GuiInventory
         	}
         }
         
-        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l, 187, 0, 15, 119);
+        int barW = (II_Settings.extraColumns + 9) * (II_Settings.extraRows + 3) < II_Settings.invoSize? 0 : 8;
+
+        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l, 187, 0, 2, 119); // Scroll top
+        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18) + 2, l, 189 + barW, 0, 13 - barW, 119); // Scroll top
         
         for(int i = 0; i < II_Settings.extraRows; i++)
         {
-            this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 119 + (i * 18), 187, 101, 15, 18);
+            this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 119 + (i * 18), 187, 101, 2, 18); // Scroll middle
+            this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18) + 2, l + 119 + (i * 18), 189 + barW, 101, 13 - barW, 18); // Scroll middle
         }
         
-        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 119 + (II_Settings.extraRows * 18), 187, 119, 15, 18);
+        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 119 + (II_Settings.extraRows * 18), 187, 119, 2, 18); // Scroll bottom
+        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18) + 2, l + 119 + (II_Settings.extraRows * 18), 189 + barW, 119, 13 - barW, 18); // Scroll bottom
         
         this.drawTexturedModalRect(k, l + 137 + (II_Settings.extraRows * 18), 0, 137, 169, 29);
         
@@ -82,7 +89,7 @@ public class GuiBigInventory extends GuiInventory
             this.drawTexturedModalRect(k + 169 + (i * 18), l + 137 + (II_Settings.extraRows * 18), 169, 137, 18, 29);
         }
         
-        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 137 + (II_Settings.extraRows * 18), 187, 137, 16, 29);
+        this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 137 + (II_Settings.extraRows * 18), 187 + barW, 137, 16 - barW, 29);
         
         func_147046_a(k + 51, l + 75, 30, (float)(k + 51) - (float)p_146976_2_, (float)(l + 75 - 50) - (float)p_146976_3_, this.mc.thePlayer);
         
@@ -124,7 +131,11 @@ public class GuiBigInventory extends GuiInventory
 			
 	        int maxPos = MathHelper.ceiling_float_int((float)II_Settings.invoSize/(float)(9 + II_Settings.extraColumns)) - (3 + II_Settings.extraRows);
 			int barPos = maxPos > 0? MathHelper.floor_float((float)container.scrollPos / (float)maxPos * (18F * (3F + (float)II_Settings.extraRows) - 8F)) : 0;
-	        this.drawTexturedModalRect(this.xSize - 13, 83 + barPos, 8, 184, 8, 8);
+			
+			if((II_Settings.extraColumns + 9) * (II_Settings.extraRows + 3) < II_Settings.invoSize)
+			{
+				this.drawTexturedModalRect(this.xSize - 13, 83 + barPos, 60, 166, 8, 8);
+			}
 	        
 	        // Draw the empty/locked slot icons
 	        for(int j = 0; j < 3 + II_Settings.extraRows; j++)
@@ -160,6 +171,11 @@ public class GuiBigInventory extends GuiInventory
 		}
 	}
     
+	/**
+	 * -1 = Dragging outside scroll, 0 = Not dragging, 1 = Dragging from scroll
+	 */
+	public int dragging = 0;
+	
     public void handleMouseInput()
     {
     	super.handleMouseInput();
@@ -174,11 +190,35 @@ public class GuiBigInventory extends GuiInventory
         	} else if(scrollDir != 0)
         	{
         		container.scrollPos -= scrollDir;
+        	} else if(Mouse.isButtonDown(0))
+        	{
+                final ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
+                int i = scaledresolution.getScaledWidth();
+                int j = scaledresolution.getScaledHeight();
+                int mouseX = Mouse.getX() * i / this.mc.displayWidth;
+                int mouseY = height - Mouse.getY() * j / this.mc.displayHeight - 1;
+        		int sx = this.guiLeft + 169 + (II_Settings.extraColumns * 18);
+        		int sy = this.guiTop + 83;
+        		
+        		boolean flag = mouseX >= sx && mouseY >= sy && mouseX < sx + 8 && mouseY < sy + (18 * (3 + II_Settings.extraRows));
+        		
+        		if((flag || dragging == 1) && dragging != -1)
+        		{
+        			dragging = 1;
+        			int maxScroll = MathHelper.ceiling_float_int((float)II_Settings.invoSize/(float)(9 + II_Settings.extraColumns)) - (3 + II_Settings.extraRows);
+        			container.scrollPos = MathHelper.clamp_int(Math.round((float)(mouseY - sy) / (float)(18 * (3 + II_Settings.extraRows)) * (float)maxScroll), 0, maxScroll);
+        		} else
+        		{
+        			dragging = -1;
+        		}
+        	} else
+        	{
+        		dragging = 0;
         	}
         	
         	container.UpdateScroll();
-    		unlock.enabled = this.container.invo.player.experienceLevel >= II_Settings.unlockCost && II_Settings.xpUnlock;
-    		unlock.displayString = unlock.enabled? "Unlock Slot" : this.container.invo.player.experienceLevel + " / " + II_Settings.unlockCost + " XP";
+    		unlock.enabled = this.container.invo.player.experienceTotal >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
+    		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceTotal + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
     		unlock.visible = II_Settings.xpUnlock;
     	}
     }

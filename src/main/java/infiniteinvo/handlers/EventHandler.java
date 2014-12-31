@@ -1,5 +1,6 @@
 package infiniteinvo.handlers;
 
+import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.client.inventory.GuiBigInventory;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
@@ -12,20 +13,25 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
-import org.apache.logging.log4j.Level;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -34,6 +40,7 @@ public class EventHandler
 {
 	public static File worldDir;
 	public static HashMap<String, Integer> unlockCache = new HashMap<String, Integer>();
+	public static HashMap<String, Container> lastOpened = new HashMap<String, Container>();
 	
 	@SubscribeEvent
 	public void onPlayerLoad(PlayerEvent.LoadFromFile event)
@@ -95,6 +102,46 @@ public class EventHandler
 	}
 	
 	@SubscribeEvent
+	public void onItemDropped(ItemTossEvent event)
+	{
+		if(event.entityItem.getEntityItem() != null)
+		{
+			if(Item.itemRegistry.getNameForObject(event.entityItem.getEntityItem().getItem()).equals("exnihilo:silkworm"))
+			{
+				event.player.addStat(InvoAchievements.wormDrops, 1);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onEntityLiving(LivingUpdateEvent event)
+	{
+		if(event.entityLiving instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer)event.entityLiving;
+			boolean flag = true;
+			for(int i = 9; i < player.inventory.mainInventory.length; i++)
+			{
+				ItemStack stack = player.inventory.mainInventory[i];
+				
+				if(stack != null && stack.getItem() == Items.cooked_porkchop && stack.stackSize >= stack.getMaxStackSize())
+				{
+					continue;
+				} else
+				{
+					flag = false;
+					break;
+				}
+			}
+			
+			if(!flag)
+			{
+				player.addStat(InvoAchievements.bacon, 1);
+			}
+		}
+	}
+	
+	@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent event)
 	{
 		if(event.entityLiving instanceof EntityPlayer && !event.entityLiving.worldObj.isRemote)
@@ -120,10 +167,16 @@ public class EventHandler
 	@SubscribeEvent
 	public void onGuiPostInit(InitGuiEvent.Post event)
 	{
-		if(event.gui instanceof GuiBigInventory)
+		/*if(event.gui instanceof GuiBigInventory)
 		{
 			((GuiBigInventory)event.gui).redoButtons = true;
-		}
+		} else if(event.gui instanceof GuiContainer)
+		{
+			GuiContainer gui = (GuiContainer)event.gui;
+			Container container = gui.inventorySlots;
+	        
+			event.buttonList.add(new InvoScrollBar(256, 0, 0, 1, 1, "", container));
+		}*/
 	}
 	
 	@SubscribeEvent

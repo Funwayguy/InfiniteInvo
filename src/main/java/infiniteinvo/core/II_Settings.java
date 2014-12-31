@@ -16,6 +16,7 @@ public class II_Settings
 	public static boolean keepUnlocks = false;
 	public static int extraRows = 3;
 	public static int extraColumns = 3;
+	public static int unlockIncrease = 1;
 	
 	public static void SaveToCache()
 	{
@@ -23,6 +24,7 @@ public class II_Settings
 		cachedSettings.setBoolean("xpUnlocks", xpUnlock);
 		cachedSettings.setInteger("unlockdSlots", unlockedSlots);
 		cachedSettings.setInteger("unlockCost", unlockCost);
+		cachedSettings.setInteger("unlockIncrease", unlockIncrease);
 	}
 	
 	public static void LoadFromCache()
@@ -36,5 +38,6 @@ public class II_Settings
 		xpUnlock = tags.getBoolean("xpUnlocks");
 		unlockedSlots = tags.getInteger("unlockdSlots");
 		unlockCost = tags.getInteger("unlockCost");
+		unlockIncrease = tags.getInteger("unlockIncrease");
 	}
 }
