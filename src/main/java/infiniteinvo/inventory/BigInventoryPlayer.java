@@ -18,11 +18,21 @@ public class BigInventoryPlayer extends InventoryPlayer
 {
     @SideOnly(Side.CLIENT)
     private ItemStack currentItemStack;
-	
+    
 	public BigInventoryPlayer(EntityPlayer player)
 	{
 		super(player);
 		this.mainInventory = new ItemStack[II_Settings.invoSize + 9];
+		
+		ItemStack[] oldMain = player.inventory.mainInventory;
+		ItemStack[] oldArmor = player.inventory.armorInventory;
+		
+		for(int i = 0; i < this.mainInventory.length && i < oldMain.length; i++)
+		{
+			this.mainInventory[i] = oldMain[i];
+		}
+		
+		this.armorInventory = oldArmor;
 	}
 	
 	public int getUnlockedSlots()
@@ -365,12 +375,18 @@ public class BigInventoryPlayer extends InventoryPlayer
             {
                 if (j >= 0 && j < this.mainInventory.length)
                 {
-                    this.mainInventory[j] = itemstack;
+                	if(this.mainInventory[j] == null)
+                	{
+                		this.mainInventory[j] = itemstack;
+                	}
                 }
 
                 if (j >= (Integer.MAX_VALUE - 100) && j <= Integer.MAX_VALUE)
                 {
-                    this.armorInventory[j - (Integer.MAX_VALUE - 100)] = itemstack;
+                	if(this.armorInventory[j - (Integer.MAX_VALUE - 100)] == null)
+                	{
+                		this.armorInventory[j - (Integer.MAX_VALUE - 100)] = itemstack;
+                	}
                 }
             }
         }
