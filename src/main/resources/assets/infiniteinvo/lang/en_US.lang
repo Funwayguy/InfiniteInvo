@@ -4,10 +4,12 @@ infiniteinvo.unlockslot=Unlock Slot
 
 achievement.infiniteinvo.baconpriorities=Bacon Priorities
 achievement.infiniteinvo.wormdrops=#WormDrops
+achievement.infiniteinvo.bonesanta=#BoneSanta
 achievement.infiniteinvo.morespace=More Space?
 achievement.infiniteinvo.allspace=Deep Pockets
 
 achievement.infiniteinvo.baconpriorities.desc=Fill every inventory slot with cooked pork
 achievement.infiniteinvo.wormdrops.desc=Flopped that worm out (Requires Ex Nihilo)
+achievement.infiniteinvo.bonesanta.desc=Gave someone your bone (SMP)
 achievement.infiniteinvo.morespace.desc=Unlocked an extra slot
 achievement.infiniteinvo.allspace.desc=Unlock all inventory slots

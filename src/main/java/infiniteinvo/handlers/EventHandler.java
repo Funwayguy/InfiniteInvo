@@ -33,6 +33,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -109,6 +110,23 @@ public class EventHandler
 			if(Item.itemRegistry.getNameForObject(event.entityItem.getEntityItem().getItem()).equals("exnihilo:silkworm"))
 			{
 				event.player.addStat(InvoAchievements.wormDrops, 1);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onItemPickup(ItemPickupEvent event)
+	{
+		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone)
+		{
+			if(!event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
+			{
+				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.func_145800_j());
+				
+				if(player != null)
+				{
+					player.addStat(InvoAchievements.boneSanta, 1);
+				}
 			}
 		}
 	}
