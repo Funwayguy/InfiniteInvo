@@ -185,7 +185,7 @@ public class GuiBigInventory extends GuiInventory
     	
     	if(container != null)
     	{
-        	int scrollDir = (int)Math.signum(Mouse.getEventDWheel());
+        	int scrollDir = (int)Math.signum(Mouse.getDWheel());
         	
         	if(container.scrollPos - scrollDir < 0)
         	{

@@ -15,7 +15,7 @@ public class BigContainerPlayer extends ContainerPlayer
 	/**
 	 * A more organised version of 'inventorySlots' that doesn't include the hotbar
 	 */
-	Slot[] slots = new Slot[II_Settings.invoSize];
+	Slot[] slots = new Slot[MathHelper.clamp_int(II_Settings.invoSize, 27, Integer.MAX_VALUE - 100)];
 	Slot[] hotbar = new Slot[9];
 	Slot[] crafting = new Slot[4];
 	Slot result;

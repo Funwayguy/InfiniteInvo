@@ -4,6 +4,7 @@ import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.handlers.EventHandler;
+import infiniteinvo.inventory.SlotLockable;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -87,7 +88,7 @@ public class InvoPacket implements IMessage
 					
 					int unlocked = 0;
 					
-					if(II_Settings.keepUnlocks && !player.getEntityData().hasKey("INFINITE_INVO_UNLOCKED") && EventHandler.unlockCache.containsKey(player.getCommandSenderName()))
+					if(!player.getEntityData().hasKey("INFINITE_INVO_UNLOCKED") && EventHandler.unlockCache.containsKey(player.getCommandSenderName()))
 					{
 						unlocked = EventHandler.unlockCache.get(player.getCommandSenderName());
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
@@ -113,11 +114,17 @@ public class InvoPacket implements IMessage
 					reply.setInteger("Unlocked", unlocked);
 					reply.setTag("Settings", II_Settings.cachedSettings);
 					return new InvoPacket(reply);
-				} else if(message.tags.getInteger("ID") == 2) // Experimental and unused
+				} else if(message.tags.getInteger("ID") == 2) // Experimental
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
 					int scrollPos = message.tags.getInteger("Scroll");
+					boolean resetSlots = message.tags.getBoolean("Reset");
+					
+					if(resetSlots)
+					{
+						System.out.println("Reseting slots serverside...");
+					}
 					
 					Slot[] invoSlots = new Slot[27];
 					Container container = player.openContainer;
@@ -127,8 +134,20 @@ public class InvoPacket implements IMessage
 					{
 						Slot s = (Slot)container.inventorySlots.get(i);
 						
-						if(s.inventory instanceof InventoryPlayer && s.slotNumber >= 9 && !(s.slotNumber >= 36 && s.slotNumber < 45))
+						if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9/* && !(s.slotNumber >= 36 && s.slotNumber < 45)*/)
 						{
+							if(resetSlots)
+							{
+								Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
+								
+								// Replace the local slot with our own tweaked one so that locked slots are handled properly
+								container.inventorySlots.set(i, r);
+								r.slotNumber = i;
+								s = r;
+								// Update the item stack listing.
+								container.inventoryItemStacks.set(i, r.getStack());
+								r.onSlotChanged();
+							}
 							invoSlots[index] = s;
 							index++;
 						}
@@ -137,7 +156,10 @@ public class InvoPacket implements IMessage
 					for(int i = 0; i < invoSlots.length; i++)
 					{
 						Slot s = invoSlots[i];
-						s.slotNumber = (i + 9) + (scrollPos * 9);
+						if(s instanceof SlotLockable)
+						{
+							((SlotLockable)s).slotIndex = (i + 9) + (scrollPos * 9);
+						}
 						s.onSlotChanged();
 					}
 					

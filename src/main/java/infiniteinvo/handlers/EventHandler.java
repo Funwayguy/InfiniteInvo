@@ -2,6 +2,7 @@ package infiniteinvo.handlers;
 
 import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.client.inventory.GuiBigInventory;
+import infiniteinvo.client.inventory.InvoScrollBar;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
@@ -14,6 +15,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -142,13 +145,26 @@ public class EventHandler
 			{
 				ItemStack stack = player.inventory.mainInventory[i];
 				
+				if(i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
+				{
+					if(stack != null)
+					{
+						player.entityDropItem(stack.copy(), 0);
+						player.inventory.setInventorySlotContents(i, null);
+						player.inventory.markDirty();
+						stack = null;
+					}
+					flag = false;
+					continue;
+				}
+				
 				if(stack != null && stack.getItem() == Items.cooked_porkchop && stack.stackSize >= stack.getMaxStackSize())
 				{
 					continue;
 				} else
 				{
 					flag = false;
-					break;
+					//break;
 				}
 			}
 			
@@ -162,7 +178,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent event)
 	{
-		if(event.entityLiving instanceof EntityPlayer && !event.entityLiving.worldObj.isRemote)
+		if(event.entityLiving instanceof EntityPlayer/* && !event.entityLiving.worldObj.isRemote*/)
 		{
 			if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
 			{
@@ -188,13 +204,13 @@ public class EventHandler
 		if(event.gui instanceof GuiBigInventory)
 		{
 			((GuiBigInventory)event.gui).redoButtons = true;
-		} /*else if(event.gui instanceof GuiContainer)
+		} else if(event.gui instanceof GuiContainer && !(event.gui instanceof GuiContainerCreative))
 		{
 			GuiContainer gui = (GuiContainer)event.gui;
 			Container container = gui.inventorySlots;
 	        
-			event.buttonList.add(new InvoScrollBar(256, 0, 0, 1, 1, "", container));
-		}*/
+			event.buttonList.add(new InvoScrollBar(256, 0, 0, 1, 1, "", container, gui));
+		}
 	}
 	
 	@SubscribeEvent
@@ -220,7 +236,17 @@ public class EventHandler
 	@SubscribeEvent
 	public void onWorldSave(WorldEvent.Save event)
 	{
-		if(!event.world.isRemote && worldDir != null)
+		if(!event.world.isRemote && worldDir != null && MinecraftServer.getServer().isServerRunning())
+		{
+			new File(worldDir, "data/").mkdirs();
+			SaveCache(new File(worldDir, "data/SlotUnlockCache"));
+		}
+	}
+	
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload event)
+	{
+		if(!event.world.isRemote && MinecraftServer.getServer().isServerRunning())
 		{
 			new File(worldDir, "data/").mkdirs();
 			SaveCache(new File(worldDir, "data/SlotUnlockCache"));
