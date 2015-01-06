@@ -100,4 +100,12 @@ public class SlotLockable extends Slot
         /** The index of the slot in the inventory. */
         return slotIndex;
     }
+
+    /**
+     * Returns if this slot contains a stack.
+     */
+    public boolean getHasStack()
+    {
+        return this.getStack() != null && this.getStack().getItem() != InfiniteInvo.locked;
+    }
 }
