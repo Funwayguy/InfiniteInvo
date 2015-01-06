@@ -120,10 +120,16 @@ public class EventHandler
 	@SubscribeEvent
 	public void onItemPickup(ItemPickupEvent event)
 	{
-		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone)
+		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone && !event.pickedUp.worldObj.isRemote)
 		{
-			if(event.pickedUp.func_145800_j() != null && !event.pickedUp.func_145800_j().isEmpty() && !event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
+			if(!event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
 			{
+				if(event.pickedUp.func_145800_j() == null || event.pickedUp.func_145800_j().isEmpty())
+				{
+					return;
+				}
+				
+				System.out.println("Picking up bone from " + event.pickedUp.func_145800_j());
 				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.func_145800_j());
 				
 				if(player != null)
@@ -191,7 +197,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event)
 	{
-		if(event.gui instanceof GuiInventory && !(event.gui instanceof GuiBigInventory))
+		if(event.gui != null && event.gui.getClass() == GuiInventory.class && !(event.gui instanceof GuiBigInventory))
 		{
 			event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
 		}

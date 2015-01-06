@@ -47,6 +47,11 @@ public class InvoScrollBar extends GuiButton
 			
 			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < 36)
 			{
+				if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
+				{
+					InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots are being used!");
+					return;
+				}
 				Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
 				
 				// Replace the local slot with our own tweaked one so that locked slots are handled properly

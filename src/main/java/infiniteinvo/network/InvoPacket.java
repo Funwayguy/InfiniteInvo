@@ -122,11 +122,6 @@ public class InvoPacket implements IMessage
 					int[] indexes = message.tags.getIntArray("Indexes");
 					boolean resetSlots = message.tags.getBoolean("Reset");
 					
-					if(resetSlots)
-					{
-						System.out.println("Reseting slots serverside...");
-					}
-					
 					Slot[] invoSlots = new Slot[27];
 					Container container = player.openContainer;
 					
@@ -140,6 +135,12 @@ public class InvoPacket implements IMessage
 						{
 							if(resetSlots)
 							{
+								if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
+								{
+									InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots (" + s.getClass().getSimpleName() + ") are being used!");
+									return null;
+								}
+								
 								Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
 								
 								// Replace the local slot with our own tweaked one so that locked slots are handled properly
@@ -158,11 +159,11 @@ public class InvoPacket implements IMessage
 					for(int i = 0; i < invoSlots.length; i++)
 					{
 						Slot s = invoSlots[i];
-						if(s instanceof SlotLockable)
+						if(s != null && s instanceof SlotLockable)
 						{
 							((SlotLockable)s).slotIndex = (i + 9) + (scrollPos * 9);
+							s.onSlotChanged();
 						}
-						s.onSlotChanged();
 					}
 					
 					container.detectAndSendChanges();
