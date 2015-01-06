@@ -1,21 +1,18 @@
 package infiniteinvo.client.inventory;
 
-import java.lang.reflect.Field;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigInventoryPlayer;
 import infiniteinvo.inventory.SlotLockable;
 import infiniteinvo.network.InvoPacket;
+import java.lang.reflect.Field;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -48,7 +45,7 @@ public class InvoScrollBar extends GuiButton
 		{
 			Slot s = (Slot)container.inventorySlots.get(i);
 			
-			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9/* && !(s.slotNumber >= 36 && s.slotNumber < 45)*/)
+			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < 36)
 			{
 				Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
 				
@@ -93,6 +90,7 @@ public class InvoScrollBar extends GuiButton
 		scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
 		scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
 		scrollTags.setInteger("Scroll", 0);
+		scrollTags.setIntArray("Indexes", slotIndex);
 		scrollTags.setBoolean("Reset", true);
 		InfiniteInvo.instance.network.sendToServer(new InvoPacket(scrollTags));
 		
@@ -211,6 +209,10 @@ public class InvoScrollBar extends GuiButton
         				s.xDisplayPosition = -99;
         				s.yDisplayPosition = -99;
         				this.drawTexturedModalRect(slotPos[i][0] + guiLeft - 1, slotPos[i][1] + guiTop - 1, 18, 166, 18, 18);
+        			} else
+        			{
+        				s.xDisplayPosition = slotPos[i][0];
+        				s.yDisplayPosition = slotPos[i][1];
         			}
         		}
         	}
@@ -237,13 +239,18 @@ public class InvoScrollBar extends GuiButton
 				{
 					((SlotLockable)s).slotIndex = slotIndex[i] + (scrollPos * 9);
 				}
+				
+				s.onSlotChanged();
 			}
+			
+			container.detectAndSendChanges();
 			
 			NBTTagCompound scrollTags = new NBTTagCompound();
 			scrollTags.setInteger("ID", 2);
 			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
 			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
 			scrollTags.setInteger("Scroll", scrollPos);
+			scrollTags.setIntArray("Indexes", slotIndex);
 			scrollTags.setBoolean("Reset", false);
 			InfiniteInvo.instance.network.sendToServer(new InvoPacket(scrollTags));
 		}

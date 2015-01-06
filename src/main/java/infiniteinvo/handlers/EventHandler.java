@@ -122,7 +122,7 @@ public class EventHandler
 	{
 		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone)
 		{
-			if(!event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
+			if(event.pickedUp.func_145800_j() != null && !event.pickedUp.func_145800_j().isEmpty() && !event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
 			{
 				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.func_145800_j());
 				

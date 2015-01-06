@@ -119,6 +119,7 @@ public class InvoPacket implements IMessage
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
 					int scrollPos = message.tags.getInteger("Scroll");
+					int[] indexes = message.tags.getIntArray("Indexes");
 					boolean resetSlots = message.tags.getBoolean("Reset");
 					
 					if(resetSlots)
@@ -132,9 +133,10 @@ public class InvoPacket implements IMessage
 					int index = 0;
 					for(int i = 0; i < container.inventorySlots.size() && index < 27; i++)
 					{
+						int origIndex = indexes[index];
 						Slot s = (Slot)container.inventorySlots.get(i);
 						
-						if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9/* && !(s.slotNumber >= 36 && s.slotNumber < 45)*/)
+						if(s.inventory instanceof InventoryPlayer && origIndex >= 9 && origIndex < 36)
 						{
 							if(resetSlots)
 							{
