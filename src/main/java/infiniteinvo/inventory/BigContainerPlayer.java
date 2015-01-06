@@ -129,6 +129,7 @@ public class BigContainerPlayer extends ContainerPlayer
 	@Override
     public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_)
     {
+		int vLocked = invo.getUnlockedSlots() < 36? 36 - invo.getUnlockedSlots() : 0;
         ItemStack itemstack = null;
         Slot slot = (Slot)this.inventorySlots.get(p_82846_2_);
 
@@ -137,7 +138,7 @@ public class BigContainerPlayer extends ContainerPlayer
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
-            if (p_82846_2_ == 0)
+            if (p_82846_2_ == 0) // Crafting result
             {
                 if (!this.mergeItemStack(itemstack1, 9, 45, true))
                 {
@@ -146,21 +147,21 @@ public class BigContainerPlayer extends ContainerPlayer
 
                 slot.onSlotChange(itemstack1, itemstack);
             }
-            else if (p_82846_2_ >= 1 && p_82846_2_ < 5)
+            else if (p_82846_2_ >= 1 && p_82846_2_ < 5) // Crafting grid
             {
                 if (!this.mergeItemStack(itemstack1, 9, 45, false))
                 {
                     return null;
                 }
             }
-            else if (p_82846_2_ >= 5 && p_82846_2_ < 9)
+            else if (p_82846_2_ >= 5 && p_82846_2_ < 9) // Armor
             {
                 if (!this.mergeItemStack(itemstack1, 9, 45, false))
                 {
                     return null;
                 }
             }
-            else if (itemstack.getItem() instanceof ItemArmor && !((Slot)this.inventorySlots.get(5 + ((ItemArmor)itemstack.getItem()).armorType)).getHasStack())
+            else if (itemstack.getItem() instanceof ItemArmor && !((Slot)this.inventorySlots.get(5 + ((ItemArmor)itemstack.getItem()).armorType)).getHasStack()) // Inventory to armor
             {
                 int j = 5 + ((ItemArmor)itemstack.getItem()).armorType;
 
@@ -169,7 +170,7 @@ public class BigContainerPlayer extends ContainerPlayer
                     return null;
                 }
             }
-            else if ((p_82846_2_ >= 9 && p_82846_2_ < 36) || (p_82846_2_ >= 45 && p_82846_2_ < 45 + (invo.getUnlockedSlots() - 36)))
+            else if ((p_82846_2_ >= 9 && p_82846_2_ < 36) || (p_82846_2_ >= 45 && p_82846_2_ < invo.getUnlockedSlots() + 9))
             {
                 if (!this.mergeItemStack(itemstack1, 36, 45, false))
                 {
@@ -178,7 +179,7 @@ public class BigContainerPlayer extends ContainerPlayer
             }
             else if (p_82846_2_ >= 36 && p_82846_2_ < 45) // Hotbar
             {
-                if (!this.mergeItemStack(itemstack1, 9, 36, false) && (invo.getUnlockedSlots() - 36 <= 0 || !this.mergeItemStack(itemstack1, 45, 45 + (invo.getUnlockedSlots() - 36), false)))
+                if (!this.mergeItemStack(itemstack1, 9, 36 - vLocked, false) && (invo.getUnlockedSlots() - 36 <= 0 || !this.mergeItemStack(itemstack1, 45, 45 + (invo.getUnlockedSlots() - 36), false)))
                 {
                     return null;
                 }
