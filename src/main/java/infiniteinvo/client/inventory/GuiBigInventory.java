@@ -164,6 +164,7 @@ public class GuiBigInventory extends GuiInventory
 		{
 			if(this.container.invo.player.experienceLevel >= II_Settings.unlockCost)
 			{
+				unlock.enabled = false;
 				NBTTagCompound tags = new NBTTagCompound();
 				tags.setInteger("ID", 0);
 				tags.setInteger("World", this.container.invo.player.worldObj.provider.dimensionId);
@@ -217,12 +218,12 @@ public class GuiBigInventory extends GuiInventory
         	} else
         	{
         		dragging = 0;
+        		unlock.enabled = this.container.invo.player.experienceLevel >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
+        		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceLevel + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
+        		unlock.visible = II_Settings.xpUnlock;
         	}
         	
         	container.UpdateScroll();
-    		unlock.enabled = this.container.invo.player.experienceLevel >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
-    		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceLevel + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
-    		unlock.visible = II_Settings.xpUnlock;
     	}
     }
 }
