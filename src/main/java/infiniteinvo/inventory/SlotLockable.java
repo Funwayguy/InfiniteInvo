@@ -39,7 +39,7 @@ public class SlotLockable extends Slot
             return this.inventory.getStackInSlot(this.slotIndex);
     	} else
     	{
-    		return lockedStack;
+    		return lockedStack.copy();
     	}
     }
 	

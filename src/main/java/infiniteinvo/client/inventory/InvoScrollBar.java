@@ -142,6 +142,7 @@ public class InvoScrollBar extends GuiButton
 	
 	public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_)
     {
+		UpdateGuiPos();
 		int scrollDX = (int)Math.signum(Mouse.getDWheel());
 		
 		if(scrollDX != 0)
@@ -226,8 +227,6 @@ public class InvoScrollBar extends GuiButton
 	
 	public void doScroll(int scrollDX)
 	{
-		UpdateGuiPos();
-		
 		int preScroll = scrollPos;
 		
 		scrollPos -= (int)Math.signum(scrollDX);
