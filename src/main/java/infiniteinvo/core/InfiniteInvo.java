@@ -5,6 +5,7 @@ import infiniteinvo.core.proxies.CommonProxy;
 import infiniteinvo.handlers.ConfigHandler;
 import infiniteinvo.item.ItemLockedSlot;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Logger;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -17,7 +18,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = InfiniteInvo.MODID, version = InfiniteInvo.VERSION, name = InfiniteInvo.NAME)
+@Mod(modid = InfiniteInvo.MODID, version = InfiniteInvo.VERSION, name = InfiniteInvo.NAME, guiFactory = "infiniteinvo.handlers.ConfigGuiFactory")
 public class InfiniteInvo
 {
     public static final String MODID = "infiniteinvo";
@@ -44,7 +45,8 @@ public class InfiniteInvo
     {
     	logger = event.getModLog();
     	network = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL);
-    	ConfigHandler.initConfigs(event.getSuggestedConfigurationFile());
+    	ConfigHandler.config = new Configuration(event.getSuggestedConfigurationFile(), true);
+    	ConfigHandler.initConfigs();
     	
     	proxy.registerHandlers();
     	

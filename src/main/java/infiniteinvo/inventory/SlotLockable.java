@@ -1,5 +1,6 @@
 package infiniteinvo.inventory;
 
+import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -106,6 +107,6 @@ public class SlotLockable extends Slot
      */
     public boolean getHasStack()
     {
-        return this.getStack() != null && this.getStack().getItem() != InfiniteInvo.locked;
+        return this.getStack() != null && (this.getStack().getItem() != InfiniteInvo.locked || !II_Settings.IT_Patch);
     }
 }

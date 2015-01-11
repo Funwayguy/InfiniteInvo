@@ -35,6 +35,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.Level;
+import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -153,12 +154,18 @@ public class EventHandler
 				
 				if(i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
 				{
-					if(stack != null)
+					if(stack != null && stack.getItem() != InfiniteInvo.locked)
 					{
 						player.entityDropItem(stack.copy(), 0);
 						player.inventory.setInventorySlotContents(i, null);
 						player.inventory.markDirty();
 						stack = null;
+					}
+					
+					if(stack == null)
+					{
+						player.inventory.setInventorySlotContents(i, new ItemStack(InfiniteInvo.locked));
+						player.inventory.markDirty();
 					}
 					flag = false;
 					continue;
@@ -310,6 +317,16 @@ public class EventHandler
 		} catch(Exception e)
 		{
 			InfiniteInvo.logger.log(Level.ERROR, "Failed to load slot unlock cache", e);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
+	{
+		if(event.modID.equals(InfiniteInvo.MODID))
+		{
+			ConfigHandler.config.save();
+			ConfigHandler.initConfigs();
 		}
 	}
 }

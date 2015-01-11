@@ -28,7 +28,13 @@ public class BigContainerPlayer extends ContainerPlayer
 		for(int i = 9; i < 36; i++)
 		{
 			// Add all the previous inventory slots to the organised array
-			slots[i - 9] = (Slot)this.inventorySlots.get(i);
+			 Slot os = (Slot)this.inventorySlots.get(i);
+			 
+			 Slot ns = new SlotLockable(os.inventory, os.getSlotIndex(), os.xDisplayPosition, os.yDisplayPosition);
+			 ns.slotNumber = os.slotNumber;
+			 this.inventorySlots.set(i, ns);
+			 ns.onSlotChanged();
+			 slots[i - 9] = ns;
 		}
 		
 		for(int i = 36; i < 45; i++)
@@ -70,7 +76,7 @@ public class BigContainerPlayer extends ContainerPlayer
             	} else
             	{
             		// Moved off screen to avoid interaction until screen scrolls over the row
-            		Slot ns = new Slot(invo, j + (i + 1) * 9, -99, -99)
+            		Slot ns = new SlotLockable(invo, j + (i + 1) * 9, -99, -99)
             		{
             			public boolean isItemValid(ItemStack p_75214_1_)
             		    {

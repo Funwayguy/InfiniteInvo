@@ -17,9 +17,12 @@ public class II_Settings
 	public static int extraRows = 3;
 	public static int extraColumns = 3;
 	public static int unlockIncrease = 1;
+
+	public static boolean IT_Patch = false;
 	
 	public static void SaveToCache()
 	{
+		cachedSettings = new NBTTagCompound();
 		cachedSettings.setInteger("invoSize", invoSize);
 		cachedSettings.setBoolean("xpUnlocks", xpUnlock);
 		cachedSettings.setInteger("unlockdSlots", unlockedSlots);

@@ -1,14 +1,21 @@
 package infiniteinvo.handlers;
 
 import infiniteinvo.core.II_Settings;
-import java.io.File;
+import infiniteinvo.core.InfiniteInvo;
 import net.minecraftforge.common.config.Configuration;
+import org.apache.logging.log4j.Level;
 
 public class ConfigHandler
 {
-	public static void initConfigs(File file)
+	public static Configuration config;
+	
+	public static void initConfigs()
 	{
-		Configuration config = new Configuration(file);
+		if(config == null)
+		{
+			InfiniteInvo.logger.log(Level.ERROR, "Config attempted to be loaded before it was initialised!");
+			return;
+		}
 		
 		config.load();
 		
@@ -20,10 +27,14 @@ public class ConfigHandler
 		II_Settings.unlockIncrease = config.getInt("Cost Increase", Configuration.CATEGORY_GENERAL, 2, 0, Integer.MAX_VALUE, "How much the unlock cost while increase per slot");
 		
 		II_Settings.extraRows = config.getInt("Extra Rows", Configuration.CATEGORY_GENERAL, 3, 0, 6, "How many extra rows are displayed in the inventory screen");
-		II_Settings.extraColumns = config.getInt("Extra Colums", Configuration.CATEGORY_GENERAL, 3, 0, 9, "How many extra columns are displayed in the inventory screen");
+		II_Settings.extraColumns = config.getInt("Extra Columns", Configuration.CATEGORY_GENERAL, 3, 0, 9, "How many extra columns are displayed in the inventory screen");
+		
+		II_Settings.IT_Patch = config.getBoolean("ITweaks Patch", Configuration.CATEGORY_GENERAL, false, "A patch for Inventory Tweaks Shift + Space crash. Has some side effects!");
 		
 		config.save();
 		
 		II_Settings.SaveToCache();
+		
+		System.out.println("Loaded configs...");
 	}
 }
