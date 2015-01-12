@@ -181,6 +181,14 @@ public class EventHandler
 				}
 			}
 			
+			if(!event.entityLiving.isEntityAlive())
+			{
+				if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+				{
+					unlockCache.remove(event.entityLiving.getCommandSenderName());
+				}
+			}
+			
 			if(flag)
 			{
 				player.addStat(InvoAchievements.bacon, 1);

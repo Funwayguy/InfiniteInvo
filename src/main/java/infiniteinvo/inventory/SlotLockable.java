@@ -35,7 +35,7 @@ public class SlotLockable extends Slot
     	if(!(this.inventory instanceof BigInventoryPlayer))
     	{
             return this.inventory.getStackInSlot(this.slotIndex);
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex - 9)
+    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex)
     	{
             return this.inventory.getStackInSlot(this.slotIndex);
     	} else
@@ -51,7 +51,7 @@ public class SlotLockable extends Slot
     	{
     		System.out.println("WARNING: Modified slot used for non modified inventory!");
     		return true;
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex - 9)
+    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex)
     	{
     		return true;
     	} else
@@ -67,7 +67,7 @@ public class SlotLockable extends Slot
     	{
     		System.out.println("WARNING: Modified slot used for non modified inventory!");
     		return true;
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex - 9)
+    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex)
     	{
     		return true;
     	} else

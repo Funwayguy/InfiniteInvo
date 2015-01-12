@@ -239,12 +239,11 @@ public class InvoScrollBar extends GuiButton
 			{
 				Slot s = invoSlots[i];
 				
-				if(s instanceof SlotLockable)
+				if(s != null && s instanceof SlotLockable)
 				{
 					((SlotLockable)s).slotIndex = slotIndex[i] + (scrollPos * 9);
+					s.onSlotChanged();
 				}
-				
-				s.onSlotChanged();
 			}
 			
 			container.detectAndSendChanges();
