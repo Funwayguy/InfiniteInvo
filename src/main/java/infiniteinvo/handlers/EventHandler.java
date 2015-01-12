@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
@@ -102,6 +103,16 @@ public class EventHandler
 			} else
 			{
 				II_Settings.LoadFromCache();
+			}
+		} else if(event.entity instanceof EntityItem)
+		{
+			EntityItem itemDrop = (EntityItem)event.entity;
+			
+			if(itemDrop.getEntityItem() != null && itemDrop.getEntityItem().getItem() == InfiniteInvo.locked)
+			{
+				itemDrop.setDead();
+				event.setCanceled(true);
+				return;
 			}
 		}
 	}
