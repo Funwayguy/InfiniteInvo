@@ -31,6 +31,8 @@ public class ConfigHandler
 		
 		II_Settings.IT_Patch = config.getBoolean("ITweaks Patch", Configuration.CATEGORY_GENERAL, false, "A patch for Inventory Tweaks Shift + Space crash. Has some side effects!");
 		
+		II_Settings.hideUpdates = config.getBoolean("Hide Updates", Configuration.CATEGORY_GENERAL, false, "Hides the one-time update notifications");
+		
 		config.save();
 		
 		II_Settings.SaveToCache();
