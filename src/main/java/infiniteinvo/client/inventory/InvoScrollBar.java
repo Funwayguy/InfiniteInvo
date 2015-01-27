@@ -194,7 +194,7 @@ public class InvoScrollBar extends GuiButton
         {
         	BigInventoryPlayer pinvo = (BigInventoryPlayer)Minecraft.getMinecraft().thePlayer.inventory;
         	
-        	if(pinvo.getUnlockedSlots() - 9 < 27)
+        	if(pinvo.getUnlockedSlots() - 9 < 27 || II_Settings.invoSize < 27)
         	{
         		for(int i = 0; i < this.invoSlots.length; i++)
         		{

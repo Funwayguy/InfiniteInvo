@@ -70,19 +70,13 @@ public class BigContainerPlayer extends ContainerPlayer
         {
             for (int j = 0; j < 9; ++j)
             {
-            	if(j + (i * 9) >= II_Settings.invoSize)
+            	if(j + (i * 9) >= II_Settings.invoSize && II_Settings.invoSize > 27)
             	{
             		break;
             	} else
             	{
             		// Moved off screen to avoid interaction until screen scrolls over the row
-            		Slot ns = new SlotLockable(invo, j + (i + 1) * 9, -99, -99)
-            		{
-            			public boolean isItemValid(ItemStack p_75214_1_)
-            		    {
-            		        return ((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotNumber - 9;
-            		    }
-            		};
+            		Slot ns = new SlotLockable(invo, j + (i + 1) * 9, -99, -99);
             		slots[j + (i * 9)] = ns;
             		this.addSlotToContainer(ns);
             	}
@@ -104,23 +98,24 @@ public class BigContainerPlayer extends ContainerPlayer
 			scrollPos = 0;
 		}
 		
-		for(int i = 0; i < MathHelper.ceiling_float_int((float)II_Settings.invoSize/(float)(9 + II_Settings.extraColumns)); i++)
+		for(int i = 0; i < MathHelper.ceiling_float_int((float)MathHelper.clamp_int(II_Settings.invoSize, 27, Integer.MAX_VALUE)/(float)(9 + II_Settings.extraColumns)); i++)
 		{
             for (int j = 0; j < 9 + II_Settings.extraColumns; ++j)
             {
-            	if(j + (i * (9 + II_Settings.extraColumns)) >= II_Settings.invoSize)
+            	int index = j + (i * (9 + II_Settings.extraColumns));
+            	if(index >= II_Settings.invoSize && index >= 27)
             	{
             		break;
             	} else
             	{
-            		if(i >= scrollPos && i < scrollPos + 3 + II_Settings.extraRows && j + i * (9 + II_Settings.extraColumns) < invo.getUnlockedSlots() - 9)
+            		if(i >= scrollPos && i < scrollPos + 3 + II_Settings.extraRows && index < invo.getUnlockedSlots() - 9 && index < II_Settings.invoSize)
             		{
-            			Slot s = slots[j + (i * (9 + II_Settings.extraColumns))];
+            			Slot s = slots[index];
             			s.xDisplayPosition = 8 + j * 18;
             			s.yDisplayPosition = 84 + (i - scrollPos) * 18;
             		} else
             		{
-            			Slot s = slots[j + (i * (9 + II_Settings.extraColumns))];
+            			Slot s = slots[index];
             			s.xDisplayPosition = -99;
             			s.yDisplayPosition = -99;
             		}

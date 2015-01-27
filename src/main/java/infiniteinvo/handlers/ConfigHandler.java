@@ -37,6 +37,6 @@ public class ConfigHandler
 		
 		II_Settings.SaveToCache();
 		
-		System.out.println("Loaded configs...");
+		InfiniteInvo.logger.log(Level.INFO, "Loaded configs...");
 	}
 }

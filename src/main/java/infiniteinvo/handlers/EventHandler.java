@@ -141,7 +141,6 @@ public class EventHandler
 					return;
 				}
 				
-				System.out.println("Picking up bone from " + event.pickedUp.func_145800_j());
 				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.func_145800_j());
 				
 				if(player != null)
@@ -163,7 +162,7 @@ public class EventHandler
 			{
 				ItemStack stack = player.inventory.mainInventory[i];
 				
-				if(i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
+				if((i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
 				{
 					if(stack != null && stack.getItem() != InfiniteInvo.locked)
 					{

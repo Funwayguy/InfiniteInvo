@@ -1,5 +1,6 @@
 package infiniteinvo.inventory;
 
+import org.apache.logging.log4j.Level;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +36,7 @@ public class SlotLockable extends Slot
     	if(!(this.inventory instanceof BigInventoryPlayer))
     	{
             return this.inventory.getStackInSlot(this.slotIndex);
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex)
+    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize)
     	{
             return this.inventory.getStackInSlot(this.slotIndex);
     	} else
@@ -49,9 +50,9 @@ public class SlotLockable extends Slot
     {
     	if(!(this.inventory instanceof BigInventoryPlayer))
     	{
-    		System.out.println("WARNING: Modified slot used for non modified inventory!");
+    		InfiniteInvo.logger.log(Level.WARN, "Modified slot used for non modified inventory!");
     		return true;
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex)
+    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize)
     	{
     		return true;
     	} else
@@ -65,9 +66,9 @@ public class SlotLockable extends Slot
     {
     	if(!(this.inventory instanceof BigInventoryPlayer))
     	{
-    		System.out.println("WARNING: Modified slot used for non modified inventory!");
+    		InfiniteInvo.logger.log(Level.WARN, "Modified slot used for non modified inventory!");
     		return true;
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex)
+    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize)
     	{
     		return true;
     	} else

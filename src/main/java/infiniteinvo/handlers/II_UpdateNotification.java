@@ -5,6 +5,7 @@ import infiniteinvo.core.InfiniteInvo;
 import java.io.BufferedInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.util.ChatComponentText;
@@ -129,7 +130,7 @@ public class II_UpdateNotification
 		int responseCode = con.getResponseCode();
 		if(responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_MOVED_PERM)
 		{
-			System.out.println("Update request returned response code: " + responseCode + " " + con.getResponseMessage());
+			InfiniteInvo.logger.log(Level.WARN, "Update request returned response code: " + responseCode + " " + con.getResponseMessage());
 		} else if(responseCode == HttpURLConnection.HTTP_MOVED_PERM)
 		{
 			if(doRedirect)
