@@ -76,7 +76,7 @@ public class BigContainerPlayer extends ContainerPlayer
             	} else
             	{
             		// Moved off screen to avoid interaction until screen scrolls over the row
-            		Slot ns = new SlotLockable(invo, j + (i + 1) * 9, -99, -99);
+            		Slot ns = new SlotLockable(invo, j + (i + 1) * 9, -999, -999);
             		slots[j + (i * 9)] = ns;
             		this.addSlotToContainer(ns);
             	}
@@ -116,8 +116,8 @@ public class BigContainerPlayer extends ContainerPlayer
             		} else
             		{
             			Slot s = slots[index];
-            			s.xDisplayPosition = -99;
-            			s.yDisplayPosition = -99;
+            			s.xDisplayPosition = -999;
+            			s.yDisplayPosition = -999;
             		}
             	}
             }

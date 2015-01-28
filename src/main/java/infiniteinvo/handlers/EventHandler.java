@@ -26,6 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
@@ -77,6 +78,21 @@ public class EventHandler
         {
             player.inventory.readFromNBT(nbttagcompound.getTagList("Inventory", 10));
         }
+	}
+	
+	@SubscribeEvent
+	public void onPlayerClone(PlayerEvent.Clone event)
+	{
+		EntityPlayer player = event.entityPlayer;
+		if(event.wasDeath)// && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+		{
+			player.inventory = new BigInventoryPlayer(player);
+			player.inventoryContainer = new BigContainerPlayer((BigInventoryPlayer)player.inventory, !player.worldObj.isRemote, player);
+			player.openContainer = player.inventoryContainer;
+			
+			player.inventory.readFromNBT(event.original.inventory.writeToNBT(new NBTTagList()));
+		}
+		//event.original
 	}
 	
 	@SubscribeEvent

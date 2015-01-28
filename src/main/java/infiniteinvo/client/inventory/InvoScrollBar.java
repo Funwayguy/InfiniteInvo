@@ -207,13 +207,13 @@ public class InvoScrollBar extends GuiButton
         			
         			if(s.getSlotIndex() - 9 >= II_Settings.invoSize)
         			{
-        				s.xDisplayPosition = -99;
-        				s.yDisplayPosition = -99;
+        				s.xDisplayPosition = -999;
+        				s.yDisplayPosition = -999;
         				this.drawTexturedModalRect(slotPos[i][0] + guiLeft - 1, slotPos[i][1] + guiTop - 1, 0, 166, 18, 18);
         			} else if(pinvo.getUnlockedSlots() <= s.getSlotIndex())
         			{
-        				s.xDisplayPosition = -99;
-        				s.yDisplayPosition = -99;
+        				s.xDisplayPosition = -999;
+        				s.yDisplayPosition = -999;
         				this.drawTexturedModalRect(slotPos[i][0] + guiLeft - 1, slotPos[i][1] + guiTop - 1, 18, 166, 18, 18);
         			} else
         			{
