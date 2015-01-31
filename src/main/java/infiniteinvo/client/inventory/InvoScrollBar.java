@@ -18,6 +18,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 public class InvoScrollBar extends GuiButton
 {
@@ -142,6 +143,7 @@ public class InvoScrollBar extends GuiButton
 	
 	public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		UpdateGuiPos();
 		int scrollDX = (int)Math.signum(Mouse.getDWheel());
 		
