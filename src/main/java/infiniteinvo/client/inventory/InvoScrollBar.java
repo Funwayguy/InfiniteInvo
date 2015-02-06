@@ -5,7 +5,9 @@ import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigInventoryPlayer;
 import infiniteinvo.inventory.SlotLockable;
 import infiniteinvo.network.InvoPacket;
+
 import java.lang.reflect.Field;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
@@ -16,6 +18,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+
 import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -93,8 +96,8 @@ public class InvoScrollBar extends GuiButton
 		
 		NBTTagCompound scrollTags = new NBTTagCompound();
 		scrollTags.setInteger("ID", 2);
-		scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
-		scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
+		scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getName());
+		scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.getDimensionId());
 		scrollTags.setInteger("Scroll", 0);
 		scrollTags.setIntArray("Indexes", slotIndex);
 		scrollTags.setBoolean("Reset", true);
@@ -252,8 +255,8 @@ public class InvoScrollBar extends GuiButton
 			
 			NBTTagCompound scrollTags = new NBTTagCompound();
 			scrollTags.setInteger("ID", 2);
-			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
-			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
+			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getName());
+			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.getDimensionId());
 			scrollTags.setInteger("Scroll", scrollPos);
 			scrollTags.setIntArray("Indexes", slotIndex);
 			scrollTags.setBoolean("Reset", false);

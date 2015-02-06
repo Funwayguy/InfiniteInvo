@@ -18,11 +18,11 @@ public class InvoAchievements
 	
 	public static void InitAchievements()
 	{
-		boneSanta = new Achievement("infiniteinvo.bonesanta", "infiniteinvo.bonesanta", -1, 1, Items.bone, null).setSpecial().registerStat();
-		wormDrops = new Achievement("infiniteinvo.wormdrops", "infiniteinvo.wormdrops", 0, 1, Blocks.leaves, null).setSpecial().registerStat();
-		bacon = new Achievement("infiniteinvo.baconpriorities", "infiniteinvo.baconpriorities", -1, 0, Items.cooked_porkchop, unlockAll).registerStat();
-		unlockFirst = new Achievement("infiniteinvo.morespace", "infiniteinvo.morespace", 0 ,0, Blocks.chest, null).registerStat();
-		unlockAll = new Achievement("infiniteinvo.allspace", "infiniteinvo.allspace", 1, 0, Blocks.ender_chest, unlockFirst).registerStat();
+		boneSanta = new Achievement("infiniteinvo.bonesanta", "infiniteinvo.bonesanta", -1, 1, Items.bone, null).setSpecial().registerAchievement();
+		wormDrops = new Achievement("infiniteinvo.wormdrops", "infiniteinvo.wormdrops", 0, 1, Blocks.leaves, null).setSpecial().registerAchievement();
+		bacon = new Achievement("infiniteinvo.baconpriorities", "infiniteinvo.baconpriorities", -1, 0, Items.cooked_porkchop, unlockAll).registerAchievement();
+		unlockFirst = new Achievement("infiniteinvo.morespace", "infiniteinvo.morespace", 0 ,0, Blocks.chest, null).registerAchievement();
+		unlockAll = new Achievement("infiniteinvo.allspace", "infiniteinvo.allspace", 1, 0, Blocks.ender_chest, unlockFirst).registerAchievement();
 		
 		page = new AchievementPage(InfiniteInvo.NAME, wormDrops, bacon, unlockFirst, unlockAll, boneSanta);
 		AchievementPage.registerAchievementPage(page);

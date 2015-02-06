@@ -8,12 +8,14 @@ import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
 import infiniteinvo.inventory.BigInventoryPlayer;
 import infiniteinvo.network.InvoPacket;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -36,12 +38,13 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.apache.logging.log4j.Level;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class EventHandler
 {
@@ -71,7 +74,7 @@ public class EventHandler
         }
         catch (Exception exception)
         {
-            InfiniteInvo.logger.warn("Failed to load player data for " + player.getCommandSenderName());
+            InfiniteInvo.logger.warn("Failed to load player data for " + player.getName());
         }
 
         if (nbttagcompound != null)
@@ -113,8 +116,8 @@ public class EventHandler
 			{
 				NBTTagCompound requestTags = new NBTTagCompound();
 				requestTags.setInteger("ID", 1);
-				requestTags.setInteger("World", event.world.provider.dimensionId);
-				requestTags.setString("Player", player.getCommandSenderName());
+				requestTags.setInteger("World", event.world.provider.getDimensionId());
+				requestTags.setString("Player", player.getName());
 				InfiniteInvo.instance.network.sendToServer(new InvoPacket(requestTags));
 			} else
 			{
@@ -150,14 +153,14 @@ public class EventHandler
 	{
 		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone && !event.pickedUp.worldObj.isRemote)
 		{
-			if(!event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
+			if(!event.player.getName().equals(event.pickedUp.getThrower()));
 			{
-				if(event.pickedUp.func_145800_j() == null || event.pickedUp.func_145800_j().isEmpty())
+				if(event.pickedUp.getThrower() == null || event.pickedUp.getThrower().isEmpty())
 				{
 					return;
 				}
 				
-				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.func_145800_j());
+				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.getThrower());
 				
 				if(player != null)
 				{
@@ -211,7 +214,7 @@ public class EventHandler
 			{
 				if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
 				{
-					unlockCache.remove(event.entityLiving.getCommandSenderName());
+					unlockCache.remove(event.entityLiving.getName());
 				}
 			}
 			
@@ -229,7 +232,7 @@ public class EventHandler
 		{
 			if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
 			{
-				unlockCache.remove(event.entityLiving.getCommandSenderName());
+				unlockCache.remove(event.entityLiving.getName());
 			}
 		}
 	}

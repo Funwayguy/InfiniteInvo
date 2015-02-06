@@ -1,5 +1,7 @@
 package infiniteinvo.client.inventory;
 
+import java.io.IOException;
+
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
@@ -13,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -94,7 +97,7 @@ public class GuiBigInventory extends GuiInventory
         
         this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 137 + (II_Settings.extraRows * 18), 187 + barW, 137, 16 - barW, 29);
         
-        func_147046_a(k + 51, l + 75, 30, (float)(k + 51) - (float)p_146976_2_, (float)(l + 75 - 50) - (float)p_146976_3_, this.mc.thePlayer);
+        drawEntityOnScreen(k + 51, l + 75, 30, (float)(k + 51) - (float)p_146976_2_, (float)(l + 75 - 50) - (float)p_146976_3_, this.mc.thePlayer);
         
         if(redoButtons)
         {
@@ -167,8 +170,8 @@ public class GuiBigInventory extends GuiInventory
 				unlock.enabled = false;
 				NBTTagCompound tags = new NBTTagCompound();
 				tags.setInteger("ID", 0);
-				tags.setInteger("World", this.container.invo.player.worldObj.provider.dimensionId);
-				tags.setString("Player", this.container.invo.player.getCommandSenderName());
+				tags.setInteger("World", this.container.invo.player.worldObj.provider.getDimensionId());
+				tags.setString("Player", this.container.invo.player.getName());
 				tags.setInteger("InvoSize", II_Settings.invoSize);
 				InfiniteInvo.instance.network.sendToServer(new InvoPacket(tags));
 			}
@@ -180,7 +183,7 @@ public class GuiBigInventory extends GuiInventory
 	 */
 	public int dragging = 0;
 	
-    public void handleMouseInput()
+    public void handleMouseInput() throws IOException
     {
     	super.handleMouseInput();
     	
