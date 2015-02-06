@@ -17,9 +17,9 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.8-2.1.0"
-group= "com.zalthonethree.zombieinfection"
-archivesBaseName = "ZombieInfection"
+version = "II_VER_KEY"
+group= "infiniteinvo"
+archivesBaseName = "InfiniteInvo"
 
 minecraft {
     version = "1.8-11.14.0.1295-1.8"
