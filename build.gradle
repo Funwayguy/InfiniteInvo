@@ -17,12 +17,21 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "II_VER_KEY"
-group= "infiniteinvo" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "InfiniteInvo"
+version = "1.8-2.1.0"
+group= "com.zalthonethree.zombieinfection"
+archivesBaseName = "ZombieInfection"
 
 minecraft {
-    version = "1.7.10-10.13.2.1230"
+    version = "1.8-11.14.0.1295-1.8"
+    runDir = "eclipse"
+    mappings = "snapshot_20150130"
+}
+
+repositories {
+    maven {
+        name 'ForgeFS'
+        url 'http://files.minecraftforge.net/maven'
+     }
 }
 
 dependencies {
@@ -32,22 +41,14 @@ processResources
 {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-    
+
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
+                
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-    
+        
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-}
-
-task deobfJar(type: Jar) {
-        from sourceSets.main.output
-        appendix = 'deobf'
-}
- 
-artifacts {
-        archives deobfJar
 }
