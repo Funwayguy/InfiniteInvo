@@ -14,11 +14,12 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
 import org.apache.logging.log4j.Level;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class InvoPacket implements IMessage
 {
@@ -62,7 +63,7 @@ public class InvoPacket implements IMessage
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
 						player.addExperienceLevel(-(II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)));
 						
-						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
+						EventHandler.unlockCache.put(player.getName(), unlocked);
 						
 						if(unlocked > 0 || !II_Settings.xpUnlock)
 						{
@@ -76,7 +77,7 @@ public class InvoPacket implements IMessage
 						
 						NBTTagCompound replyTags = new NBTTagCompound();
 						replyTags.setInteger("ID", 0);
-						replyTags.setString("Player", player.getCommandSenderName());
+						replyTags.setString("Player", player.getName());
 						replyTags.setInteger("Unlocked", unlocked);
 						return new InvoPacket(replyTags);
 						
@@ -88,14 +89,14 @@ public class InvoPacket implements IMessage
 					
 					int unlocked = 0;
 					
-					if(!player.getEntityData().hasKey("INFINITE_INVO_UNLOCKED") && EventHandler.unlockCache.containsKey(player.getCommandSenderName()))
+					if(!player.getEntityData().hasKey("INFINITE_INVO_UNLOCKED") && EventHandler.unlockCache.containsKey(player.getName()))
 					{
-						unlocked = EventHandler.unlockCache.get(player.getCommandSenderName());
+						unlocked = EventHandler.unlockCache.get(player.getName());
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
 					} else
 					{
 						unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
-						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
+						EventHandler.unlockCache.put(player.getName(), unlocked);
 					}
 					
 					if(unlocked > 0 || !II_Settings.xpUnlock)
@@ -110,7 +111,7 @@ public class InvoPacket implements IMessage
 					
 					NBTTagCompound reply = new NBTTagCompound();
 					reply.setInteger("ID", 0);
-					reply.setString("Player", player.getCommandSenderName());
+					reply.setString("Player", player.getName());
 					reply.setInteger("Unlocked", unlocked);
 					reply.setTag("Settings", II_Settings.cachedSettings);
 					return new InvoPacket(reply);
