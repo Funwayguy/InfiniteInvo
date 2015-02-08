@@ -6,6 +6,7 @@ import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.handlers.EventHandler;
 import infiniteinvo.inventory.SlotLockable;
 import io.netty.buffer.ByteBuf;
+import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -120,7 +121,15 @@ public class InvoPacket implements IMessage
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
 					int scrollPos = message.tags.getInteger("Scroll");
 					int[] indexes = message.tags.getIntArray("Indexes");
+					int[] numbers = message.tags.getIntArray("Numbers");
 					boolean resetSlots = message.tags.getBoolean("Reset");
+					
+					ArrayList<Integer> numList = new ArrayList<Integer>(); // Valid slot numbers that represent the player's inventory
+					
+					for(int num : numbers)
+					{
+						numList.add(num);
+					}
 					
 					Slot[] invoSlots = new Slot[27];
 					Container container = player.openContainer;
@@ -128,10 +137,9 @@ public class InvoPacket implements IMessage
 					int index = 0;
 					for(int i = 0; i < container.inventorySlots.size() && index < 27; i++)
 					{
-						int origIndex = indexes[index];
 						Slot s = (Slot)container.inventorySlots.get(i);
 						
-						if(s.inventory instanceof InventoryPlayer && origIndex >= 9 && origIndex < 36)
+						if(s.inventory instanceof InventoryPlayer && numList.contains(s.slotNumber))
 						{
 							if(resetSlots)
 							{
@@ -139,17 +147,18 @@ public class InvoPacket implements IMessage
 								{
 									InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots (" + s.getClass().getSimpleName() + ") are being used!");
 									return null;
+								} else if(!(s instanceof SlotLockable))
+								{
+									Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
+									
+									// Replace the local slot with our own tweaked one so that locked slots are handled properly
+									container.inventorySlots.set(i, r);
+									r.slotNumber = i;
+									s = r;
+									// Update the item stack listing.
+									container.inventoryItemStacks.set(i, r.getStack());
+									r.onSlotChanged();
 								}
-								
-								Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
-								
-								// Replace the local slot with our own tweaked one so that locked slots are handled properly
-								container.inventorySlots.set(i, r);
-								r.slotNumber = i;
-								s = r;
-								// Update the item stack listing.
-								container.inventoryItemStacks.set(i, r.getStack());
-								r.onSlotChanged();
 							}
 							invoSlots[index] = s;
 							index++;
@@ -161,7 +170,7 @@ public class InvoPacket implements IMessage
 						Slot s = invoSlots[i];
 						if(s != null && s instanceof SlotLockable)
 						{
-							((SlotLockable)s).slotIndex = (i + 9) + (scrollPos * 9);
+							((SlotLockable)s).slotIndex = indexes[i] + (scrollPos * 9);
 							s.onSlotChanged();
 						}
 					}

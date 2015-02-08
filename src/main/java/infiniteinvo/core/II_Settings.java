@@ -20,6 +20,8 @@ public class II_Settings
 	public static boolean hideUpdates = false;
 
 	public static boolean IT_Patch = false;
+
+	public static boolean vanillaInvo = false;
 	
 	public static void SaveToCache()
 	{

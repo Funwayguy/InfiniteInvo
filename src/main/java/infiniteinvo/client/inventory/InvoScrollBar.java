@@ -6,10 +6,11 @@ import infiniteinvo.inventory.BigInventoryPlayer;
 import infiniteinvo.inventory.SlotLockable;
 import infiniteinvo.network.InvoPacket;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -22,6 +23,8 @@ import org.lwjgl.opengl.GL11;
 
 public class InvoScrollBar extends GuiButton
 {
+	int refresh = 0;
+	boolean creative = false;
 	int maxScroll = 0;
 	int scrollPos = 0;
 	Container container;
@@ -30,7 +33,7 @@ public class InvoScrollBar extends GuiButton
 	int guiTop = 0;
 	int[][] slotPos = new int[27][2];
 	Slot[] invoSlots = new Slot[27];
-	int[] slotIndex = new int[27];
+	int[][] slotIndex = new int[2][27];
 	
 	int scrollX = 0;
 	int scrollY = Integer.MAX_VALUE;
@@ -40,20 +43,45 @@ public class InvoScrollBar extends GuiButton
 		super(id, posX, posY, width, height, title);
 		this.container = container;
 		this.gui = gui;
+		this.creative = gui instanceof GuiContainerCreative;
+		this.enabled = false;
+		refresh = 0;
+		
+		if(this.creative)
+		{
+			enabled = this.InitCreative();
+		} else
+		{
+			enabled = this.InitDefault();
+		}
+		
+		UpdateGuiPos();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean InitDefault()
+	{
+		if(refresh > 0)
+		{
+			return enabled;
+		} else
+		{
+			refresh = 15;
+		}
 		
 		int index = 0;
 		for(int i = 0; i < container.inventorySlots.size() && index < 27; i++)
 		{
 			Slot s = (Slot)container.inventorySlots.get(i);
 			
-			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < 36)
+			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < II_Settings.invoSize + 9)
 			{
 				if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
 				{
-					InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots are being used!");
-					return;
+					InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots (" + s.getClass() + ") are being used!");
+					return false;
 				}
-				Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
+				Slot r = new SlotLockable(s.inventory, index + 9, s.xDisplayPosition, s.yDisplayPosition);
 				
 				// Replace the local slot with our own tweaked one so that locked slots are handled properly
 				container.inventorySlots.set(i, r);
@@ -63,7 +91,8 @@ public class InvoScrollBar extends GuiButton
 				r.onSlotChanged();
 				
 				invoSlots[index] = s;
-				slotIndex[index] = s.getSlotIndex();
+				slotIndex[0][index] = s.getSlotIndex();
+				slotIndex[1][index] = s.slotNumber;
 				slotPos[index][0] = s.xDisplayPosition;
 				slotPos[index][1] = s.yDisplayPosition;
 				
@@ -96,11 +125,76 @@ public class InvoScrollBar extends GuiButton
 		scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
 		scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
 		scrollTags.setInteger("Scroll", 0);
-		scrollTags.setIntArray("Indexes", slotIndex);
+		scrollTags.setIntArray("Indexes", slotIndex[0]);
+		scrollTags.setIntArray("Numbers", slotIndex[1]);
 		scrollTags.setBoolean("Reset", true);
 		InfiniteInvo.instance.network.sendToServer(new InvoPacket(scrollTags));
 		
-		UpdateGuiPos();
+		return true;
+	}
+	
+	public boolean InitCreative()
+	{
+		if(refresh > 0)
+		{
+			return enabled;
+		} else
+		{
+			refresh = 15;
+		}
+		
+		ArrayList<Slot> slotList = new ArrayList<Slot>();
+		ArrayList<int[]> indexList = new ArrayList<int[]>();
+		for(int i = 0; i < container.inventorySlots.size(); i++)
+		{
+			Slot s = (Slot)container.inventorySlots.get(i);
+			
+			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9)// && s.getSlotIndex() < II_Settings.invoSize + 27)
+			{
+				if(s.getSlotIndex() >= 36 && s.getSlotIndex() < 36 + 9)
+				{
+					// This is the (oddly indexed) hotbar
+					continue;
+				}
+				slotList.add(s);
+				int[] tmp = new int[]{s.getSlotIndex(), i};
+				indexList.add(tmp);
+				
+				if(s.getSlotIndex() >= 36)
+				{
+					s.xDisplayPosition = -2000;
+					s.yDisplayPosition = -2000;
+				} else
+				{
+					if(s.xDisplayPosition - 1 > scrollX)
+					{
+						scrollX = s.xDisplayPosition - 1;
+					}
+					
+					if(s.yDisplayPosition - 1 < scrollY)
+					{
+						scrollY = s.yDisplayPosition - 1;
+					}
+				}
+			}
+		}
+		
+		this.invoSlots = slotList.toArray(new Slot[]{});
+		this.slotIndex = new int[indexList.size()][2];
+		for(int i = 0; i < indexList.size(); i++)
+		{
+			slotIndex[i] = indexList.get(i);
+		}
+		
+		if(invoSlots.length <= 27)
+		{
+			maxScroll = 0;
+		} else
+		{
+			maxScroll = MathHelper.ceiling_float_int((float)(invoSlots.length - 27)/9F);
+		}
+		
+		return true;
 	}
 	
 	public void UpdateGuiPos()
@@ -141,8 +235,18 @@ public class InvoScrollBar extends GuiButton
 	
 	int dragging = 0;
 	
-	public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_)
+	public void drawButton(Minecraft p_146112_1_, int mx, int my)
     {
+		if(refresh > 0)
+		{
+			refresh--;
+		}
+		
+		if(!enabled)
+		{
+			return;
+		}
+		
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		UpdateGuiPos();
 		int scrollDX = (int)Math.signum(Mouse.getDWheel());
@@ -152,25 +256,19 @@ public class InvoScrollBar extends GuiButton
 			doScroll(scrollDX);
 		} else if(Mouse.isButtonDown(0))
     	{
-			Minecraft mc = Minecraft.getMinecraft();
-            final ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-            int i = scaledresolution.getScaledWidth();
-            int j = scaledresolution.getScaledHeight();
-            int mouseX = Mouse.getX() * i / mc.displayWidth;
-            int mouseY = height - Mouse.getY() * j / mc.displayHeight - 1;
     		int sx = this.guiLeft + scrollX + 20;
     		int sy = this.guiTop + scrollY;
     		
-    		boolean flag = mouseX >= sx && mouseY >= sy && mouseX < sx + 8 && mouseY < sy + (18 * 3);
+    		boolean flag = mx >= sx && my >= sy && mx < sx + 8 && my < sy + (18 * 3);
     		
     		if((flag || dragging == 1) && dragging != -1)
     		{
     			dragging = 1;
     			int preScroll = scrollPos;
-    			scrollPos = MathHelper.clamp_int(Math.round((float)(mouseY - sy) / (float)(18 * 3) * (float)maxScroll), 0, maxScroll);
-    			if(scrollPos - preScroll != 0)
+    			int tmpPos = MathHelper.clamp_int(Math.round((float)(my - sy) / (float)(18 * 3) * (float)maxScroll), 0, maxScroll);
+    			if(preScroll - tmpPos != 0)
     			{
-    				doScroll(scrollPos - preScroll);
+    				doScroll(preScroll - tmpPos);
     			}
     		} else
     		{
@@ -196,17 +294,56 @@ public class InvoScrollBar extends GuiButton
         {
         	BigInventoryPlayer pinvo = (BigInventoryPlayer)Minecraft.getMinecraft().thePlayer.inventory;
         	
-        	if(pinvo.getUnlockedSlots() - 9 < 27 || II_Settings.invoSize < 27)
-        	{
-        		for(int i = 0; i < this.invoSlots.length; i++)
-        		{
-        			Slot s = this.invoSlots[i];
-        			
-        			if(s == null)
-        			{
-        				continue;
-        			}
-        			
+    		if(this.enabled && (invoSlots.length <= 0 || invoSlots[0] == null))
+    		{
+    			if(creative)
+    			{
+    				this.InitCreative();
+    			} else
+    			{
+    				this.InitDefault();
+    			}
+    			return;
+    		}
+    		
+    		for(int i = 0; i < this.invoSlots.length; i++)
+    		{
+    			Slot s = this.invoSlots[i];
+    			
+    			if(s == null)
+    			{
+    				continue;
+    			}
+    			
+    			if(creative)
+    			{
+    				if(!container.inventorySlots.contains(s))
+    				{
+    					this.InitCreative();
+    					return;
+    				}
+    				int j = slotIndex[i][1] - (9 * scrollPos) - (s.getSlotIndex() >= 36? 9 : 0);
+    				int k = j - 9;
+                    int l = k % 9;
+                    int i1 = k / 9;
+                    s.xDisplayPosition = 9 + l * 18;
+
+                    if (j >= 36 || j < 9)
+                    {
+                    	s.yDisplayPosition = -2000;
+                    	s.xDisplayPosition = -2000;
+                    } else
+                    {
+                        s.yDisplayPosition = 54 + i1 * 18;
+                    }
+    			} else
+    			{
+    				if(!container.inventorySlots.contains(s))
+    				{
+    					this.InitDefault();
+    					return;
+    				}
+    				
         			if(s.getSlotIndex() - 9 >= II_Settings.invoSize)
         			{
         				s.xDisplayPosition = -999;
@@ -222,20 +359,25 @@ public class InvoScrollBar extends GuiButton
         				s.xDisplayPosition = slotPos[i][0];
         				s.yDisplayPosition = slotPos[i][1];
         			}
-        		}
+    			}
         	}
         }
     }
 	
 	public void doScroll(int scrollDX)
 	{
+		if(!enabled)
+		{
+			return;
+		}
+		
 		int preScroll = scrollPos;
 		
 		scrollPos -= (int)Math.signum(scrollDX);
 		
 		scrollPos = MathHelper.clamp_int(scrollPos, 0, maxScroll);
 		
-		if(preScroll != scrollPos)
+		if(preScroll != scrollPos && !creative)
 		{
 			for(int i = 0; i < invoSlots.length; i++)
 			{
@@ -243,7 +385,7 @@ public class InvoScrollBar extends GuiButton
 				
 				if(s != null && s instanceof SlotLockable)
 				{
-					((SlotLockable)s).slotIndex = slotIndex[i] + (scrollPos * 9);
+					((SlotLockable)s).slotIndex = slotIndex[0][i] + (scrollPos * 9);
 					s.onSlotChanged();
 				}
 			}
@@ -255,9 +397,16 @@ public class InvoScrollBar extends GuiButton
 			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
 			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
 			scrollTags.setInteger("Scroll", scrollPos);
-			scrollTags.setIntArray("Indexes", slotIndex);
+			scrollTags.setIntArray("Indexes", slotIndex[0]);
+			scrollTags.setIntArray("Numbers", slotIndex[1]);
 			scrollTags.setBoolean("Reset", false);
 			InfiniteInvo.instance.network.sendToServer(new InvoPacket(scrollTags));
 		}
 	}
+	
+	@Override
+	public boolean mousePressed(Minecraft mc, int mx, int my)
+    {
+		return false;
+    }
 }

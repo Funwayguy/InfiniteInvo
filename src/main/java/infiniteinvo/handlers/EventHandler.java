@@ -2,6 +2,7 @@ package infiniteinvo.handlers;
 
 import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.client.inventory.GuiBigInventory;
+import infiniteinvo.client.inventory.GuiButtonUnlockSlot;
 import infiniteinvo.client.inventory.InvoScrollBar;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
@@ -15,8 +16,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -178,7 +179,7 @@ public class EventHandler
 			{
 				ItemStack stack = player.inventory.mainInventory[i];
 				
-				if((i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
+				if(player.inventory instanceof BigInventoryPlayer && (i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
 				{
 					if(stack != null && stack.getItem() != InfiniteInvo.locked)
 					{
@@ -240,7 +241,10 @@ public class EventHandler
 	{
 		if(event.gui != null && event.gui.getClass() == GuiInventory.class && !(event.gui instanceof GuiBigInventory))
 		{
-			event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
+			if(!II_Settings.vanillaInvo)
+			{
+				event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
+			}
 		}
 	}
 	
@@ -251,12 +255,20 @@ public class EventHandler
 		if(event.gui instanceof GuiBigInventory)
 		{
 			((GuiBigInventory)event.gui).redoButtons = true;
-		} else if(event.gui instanceof GuiContainer && !(event.gui instanceof GuiContainerCreative))
+		} else if(event.gui instanceof GuiContainer)// && !(event.gui instanceof GuiContainerCreative))
 		{
 			GuiContainer gui = (GuiContainer)event.gui;
 			Container container = gui.inventorySlots;
-	        
+			
 			event.buttonList.add(new InvoScrollBar(256, 0, 0, 1, 1, "", container, gui));
+			
+			if(event.gui instanceof GuiInventory)
+			{
+				final ScaledResolution scaledresolution = new ScaledResolution(event.gui.mc, event.gui.mc.displayWidth, event.gui.mc.displayHeight);
+                int i = scaledresolution.getScaledWidth();
+                int j = scaledresolution.getScaledHeight();
+				event.buttonList.add(new GuiButtonUnlockSlot(event.buttonList.size(), i/2 - 50, j - 40, 100, 20, event.gui.mc.thePlayer));
+			}
 		}
 	}
 	
@@ -293,7 +305,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload event)
 	{
-		if(!event.world.isRemote && MinecraftServer.getServer().isServerRunning())
+		if(!event.world.isRemote && worldDir != null && !MinecraftServer.getServer().isServerRunning())
 		{
 			new File(worldDir, "data/").mkdirs();
 			SaveCache(new File(worldDir, "data/SlotUnlockCache"));
@@ -325,6 +337,7 @@ public class EventHandler
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void LoadCache(File file)
 	{
 		try
