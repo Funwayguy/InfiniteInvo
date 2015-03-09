@@ -18,10 +18,11 @@ public class II_Settings
 	public static int extraColumns = 3;
 	public static int unlockIncrease = 1;
 	public static boolean hideUpdates = false;
+	public static boolean useOrbs = false;
 
 	public static boolean IT_Patch = false;
 
-	public static boolean vanillaInvo = false;
+	//public static boolean vanillaInvo = false;
 	
 	public static void SaveToCache()
 	{
@@ -31,6 +32,7 @@ public class II_Settings
 		cachedSettings.setInteger("unlockdSlots", unlockedSlots);
 		cachedSettings.setInteger("unlockCost", unlockCost);
 		cachedSettings.setInteger("unlockIncrease", unlockIncrease);
+		cachedSettings.setBoolean("useOrbs", useOrbs);
 	}
 	
 	public static void LoadFromCache()
@@ -45,5 +47,6 @@ public class II_Settings
 		unlockedSlots = tags.getInteger("unlockdSlots");
 		unlockCost = tags.getInteger("unlockCost");
 		unlockIncrease = tags.getInteger("unlockIncrease");
+		useOrbs = tags.getBoolean("useOrbs");
 	}
 }

@@ -25,6 +25,7 @@ public class ConfigHandler
 		II_Settings.unlockCost = config.getInt("Unlock cost", Configuration.CATEGORY_GENERAL, 10, 1, Integer.MAX_VALUE, "How many XP levels are required to unlock a slot");
 		II_Settings.keepUnlocks = config.getBoolean("Persistent Unlocks", Configuration.CATEGORY_GENERAL, false, "Whether players will keep their unlocked slots upon death");
 		II_Settings.unlockIncrease = config.getInt("Cost Increase", Configuration.CATEGORY_GENERAL, 2, 0, Integer.MAX_VALUE, "How much the unlock cost while increase per slot");
+		II_Settings.useOrbs = config.getBoolean("Use Orbs", Configuration.CATEGORY_GENERAL, false, "Unlock cost is in orbs instead of levels");
 		
 		II_Settings.extraRows = config.getInt("Extra Rows", Configuration.CATEGORY_GENERAL, 3, 0, 6, "How many extra rows are displayed in the inventory screen");
 		II_Settings.extraColumns = config.getInt("Extra Columns", Configuration.CATEGORY_GENERAL, 3, 0, 9, "How many extra columns are displayed in the inventory screen");
@@ -32,7 +33,7 @@ public class ConfigHandler
 		II_Settings.IT_Patch = config.getBoolean("ITweaks Patch", Configuration.CATEGORY_GENERAL, false, "A patch for Inventory Tweaks Shift + Space crash. Has some side effects!");
 		
 		II_Settings.hideUpdates = config.getBoolean("Hide Updates", Configuration.CATEGORY_GENERAL, false, "Hides the one-time update notifications");
-		II_Settings.vanillaInvo = config.getBoolean("Compatibility Inventory", Configuration.CATEGORY_GENERAL, false, "Force use the vanilla GUI for rare compatibility conflicts. Thanks BattleGear2 devs for making me need to add this (/_-)");
+		//II_Settings.vanillaInvo = config.getBoolean("Compatibility Inventory", Configuration.CATEGORY_GENERAL, false, "Force use the vanilla GUI for rare compatibility conflicts. Thanks BattleGear2 devs for making me need to add this (/_-)");
 		
 		config.save();
 		

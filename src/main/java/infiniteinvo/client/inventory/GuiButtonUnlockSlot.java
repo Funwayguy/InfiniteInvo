@@ -2,6 +2,7 @@ package infiniteinvo.client.inventory;
 
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
+import infiniteinvo.core.XPHelper;
 import infiniteinvo.inventory.BigInventoryPlayer;
 import infiniteinvo.network.InvoPacket;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ public class GuiButtonUnlockSlot extends GuiButton
 	{
 		super(p_i1020_1_, p_i1020_2_, p_i1020_3_, "");
 		this.player = player;
+		this.enabled = false;
 	}
 	
 	public GuiButtonUnlockSlot(int p_i1021_1_, int p_i1021_2_, int p_i1021_3_, int p_i1021_4_, int p_i1021_5_, EntityPlayer player)
@@ -29,9 +31,12 @@ public class GuiButtonUnlockSlot extends GuiButton
 	@Override
 	public void drawButton(Minecraft mc, int mx, int my)
 	{
+		this.visible = II_Settings.xpUnlock;
+		
 		if(player.inventory instanceof BigInventoryPlayer)
-		{
-			this.enabled = player.experienceLevel >= (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && ((BigInventoryPlayer)player.inventory).getUnlockedSlots() - 9 < II_Settings.invoSize;
+		{ 
+			int cost = (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease));
+			this.enabled = XPHelper.getPlayerXP(player) >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost - 1)) && II_Settings.xpUnlock && ((BigInventoryPlayer)player.inventory).getUnlockedSlots() - 9 < II_Settings.invoSize;
 		} else
 		{
 			this.enabled = false;

@@ -3,6 +3,7 @@ package infiniteinvo.network;
 import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
+import infiniteinvo.core.XPHelper;
 import infiniteinvo.handlers.EventHandler;
 import infiniteinvo.inventory.SlotLockable;
 import io.netty.buffer.ByteBuf;
@@ -56,12 +57,32 @@ public class InvoPacket implements IMessage
 				if(message.tags.getInteger("ID") == 0)
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
+					
+					if(world == null)
+					{
+						return null;
+					}
+					
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
+					
+					if(player == null)
+					{
+						return null;
+					}
+					
 					if(player.experienceLevel >= (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)))
 					{
 						int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") + 1;
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
-						player.addExperienceLevel(-(II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)));
+						int cost = II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease);
+						
+						if(II_Settings.useOrbs)
+						{
+							XPHelper.AddXP(player, -cost);
+						} else
+						{
+							XPHelper.AddXP(player, -XPHelper.getLevelXP(cost - 1));
+						}
 						
 						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
 						
@@ -85,7 +106,20 @@ public class InvoPacket implements IMessage
 				} else if(message.tags.getInteger("ID") == 1)
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
+					
+					if(world == null)
+					{
+						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
+						return null;
+					}
+					
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
+					
+					if(player == null || player.getEntityData() == null)
+					{
+						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Reason: Unabled to get data for player '" + message.tags.getString("Player") + "'");
+						return null;
+					}
 					
 					int unlocked = 0;
 					
@@ -118,11 +152,24 @@ public class InvoPacket implements IMessage
 				} else if(message.tags.getInteger("ID") == 2) // Experimental
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
+					
+					if(world == null)
+					{
+						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
+						return null;
+					}
+					
 					EntityPlayer player = world.getPlayerEntityByName(message.tags.getString("Player"));
 					int scrollPos = message.tags.getInteger("Scroll");
 					int[] indexes = message.tags.getIntArray("Indexes");
 					int[] numbers = message.tags.getIntArray("Numbers");
 					boolean resetSlots = message.tags.getBoolean("Reset");
+					
+					if(player == null || player.getEntityData() == null)
+					{
+						InfiniteInvo.logger.log(Level.WARN, "Custom Invo Sync Failed! Reason: Unabled to get data for player '" + message.tags.getString("Player") + "'");
+						return null;
+					}
 					
 					ArrayList<Integer> numList = new ArrayList<Integer>(); // Valid slot numbers that represent the player's inventory
 					

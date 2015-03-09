@@ -241,7 +241,7 @@ public class EventHandler
 	{
 		if(event.gui != null && event.gui.getClass() == GuiInventory.class && !(event.gui instanceof GuiBigInventory))
 		{
-			if(!II_Settings.vanillaInvo)
+			//if(!II_Settings.vanillaInvo)
 			{
 				event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
 			}

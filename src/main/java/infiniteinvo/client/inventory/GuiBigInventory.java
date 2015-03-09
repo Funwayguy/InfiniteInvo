@@ -1,18 +1,14 @@
 package infiniteinvo.client.inventory;
 
 import infiniteinvo.core.II_Settings;
-import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
-import infiniteinvo.network.InvoPacket;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -34,10 +30,7 @@ public class GuiBigInventory extends GuiInventory
 	public void initGui()
 	{
 		super.initGui();
-		unlock = new GuiButton(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, "");
-		unlock.enabled = this.container.invo.player.experienceLevel >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
-		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceLevel + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
-		unlock.visible = II_Settings.xpUnlock;
+		unlock = new GuiButtonUnlockSlot(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, container.invo.player);
 		this.buttonList.add(unlock);
 	}
 	
@@ -156,24 +149,6 @@ public class GuiBigInventory extends GuiInventory
 	        }
 		}
 	}
-	
-	@Override
-	public void actionPerformed(GuiButton button)
-	{
-		if(button.id == 100 && button.enabled)
-		{
-			if(this.container.invo.player.experienceLevel >= II_Settings.unlockCost)
-			{
-				unlock.enabled = false;
-				NBTTagCompound tags = new NBTTagCompound();
-				tags.setInteger("ID", 0);
-				tags.setInteger("World", this.container.invo.player.worldObj.provider.dimensionId);
-				tags.setString("Player", this.container.invo.player.getCommandSenderName());
-				tags.setInteger("InvoSize", II_Settings.invoSize);
-				InfiniteInvo.instance.network.sendToServer(new InvoPacket(tags));
-			}
-		}
-	}
     
 	/**
 	 * -1 = Dragging outside scroll, 0 = Not dragging, 1 = Dragging from scroll
@@ -218,9 +193,6 @@ public class GuiBigInventory extends GuiInventory
         	} else
         	{
         		dragging = 0;
-        		unlock.enabled = this.container.invo.player.experienceLevel >= (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) && II_Settings.xpUnlock && this.container.invo.getUnlockedSlots() - 9 < II_Settings.invoSize;
-        		unlock.displayString = unlock.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : this.container.invo.player.experienceLevel + " / " + (II_Settings.unlockCost + (this.container.invo.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
-        		unlock.visible = II_Settings.xpUnlock;
         	}
         	
         	container.UpdateScroll();
