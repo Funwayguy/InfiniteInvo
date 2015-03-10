@@ -1,18 +1,24 @@
 package infiniteinvo.core;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S1FPacketSetExperience;
 
 public class XPHelper
 {
 	public static void AddXP(EntityPlayer player, int xp)
 	{
-		System.out.println("XP Before: " + getPlayerXP(player));
 		int experience = getPlayerXP(player) + xp;
 		player.experienceTotal = experience;
 		player.experienceLevel = getXPLevel(experience);
 		int expForLevel = getLevelXP(player.experienceLevel);
 		player.experience = (float)(experience - expForLevel) / (float)player.xpBarCap();
-		System.out.println("XP After: " + getPlayerXP(player));
+		
+		if(player instanceof EntityPlayerMP)
+		{
+			// Make sure the client isn't being stupid about syncing the experience bars which routinely fail
+            ((EntityPlayerMP)player).playerNetServerHandler.sendPacket(new S1FPacketSetExperience(player.experience, player.experienceTotal, player.experienceLevel));
+		}
 	}
 	
 	public static int getPlayerXP(EntityPlayer player)

@@ -69,20 +69,23 @@ public class InvoPacket implements IMessage
 					{
 						return null;
 					}
+
+					int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
+					int cost = II_Settings.unlockCost + (unlocked * II_Settings.unlockIncrease);
+					int totalXP = XPHelper.getPlayerXP(player);
 					
-					if(player.experienceLevel >= (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)))
+					if(totalXP >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost)))
 					{
-						int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") + 1;
-						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
-						int cost = II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease);
-						
 						if(II_Settings.useOrbs)
 						{
 							XPHelper.AddXP(player, -cost);
 						} else
 						{
-							XPHelper.AddXP(player, -XPHelper.getLevelXP(cost - 1));
+							XPHelper.AddXP(player, -XPHelper.getLevelXP(cost));
 						}
+						
+						unlocked++;
+						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
 						
 						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
 						
@@ -123,14 +126,19 @@ public class InvoPacket implements IMessage
 					
 					int unlocked = 0;
 					
-					if(!player.getEntityData().hasKey("INFINITE_INVO_UNLOCKED") && EventHandler.unlockCache.containsKey(player.getCommandSenderName()))
+					if(!player.getEntityData().hasKey("INFINITE_INVO_UNLOCKED") && (EventHandler.unlockCache.containsKey(player.getCommandSenderName()) || EventHandler.unlockCache.containsKey(player.getUniqueID().toString())))
 					{
-						unlocked = EventHandler.unlockCache.get(player.getCommandSenderName());
+						unlocked = EventHandler.unlockCache.containsKey(player.getCommandSenderName())? EventHandler.unlockCache.get(player.getCommandSenderName()) : EventHandler.unlockCache.get(player.getUniqueID().toString());
+						if(EventHandler.unlockCache.containsKey(player.getCommandSenderName()))
+						{
+							EventHandler.unlockCache.put(player.getUniqueID().toString(), unlocked);
+							EventHandler.unlockCache.remove(player.getCommandSenderName());
+						}
 						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
 					} else
 					{
 						unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
-						EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
+						EventHandler.unlockCache.put(player.getUniqueID().toString(), unlocked);
 					}
 					
 					if(unlocked > 0 || !II_Settings.xpUnlock)

@@ -32,17 +32,17 @@ public class GuiButtonUnlockSlot extends GuiButton
 	public void drawButton(Minecraft mc, int mx, int my)
 	{
 		this.visible = II_Settings.xpUnlock;
+		int cost = (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease));
 		
 		if(player.inventory instanceof BigInventoryPlayer)
 		{ 
-			int cost = (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease));
-			this.enabled = XPHelper.getPlayerXP(player) >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost - 1)) && II_Settings.xpUnlock && ((BigInventoryPlayer)player.inventory).getUnlockedSlots() - 9 < II_Settings.invoSize;
+			this.enabled = XPHelper.getPlayerXP(player) >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost)) && II_Settings.xpUnlock && ((BigInventoryPlayer)player.inventory).getUnlockedSlots() - 9 < II_Settings.invoSize;
 		} else
 		{
 			this.enabled = false;
 		}
 		
-		this.displayString = this.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : player.experienceLevel + " / " + (II_Settings.unlockCost + (player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") * II_Settings.unlockIncrease)) + " XP";
+		this.displayString = this.enabled? StatCollector.translateToLocal("infiniteinvo.unlockslot") : (II_Settings.useOrbs? XPHelper.getPlayerXP(player) : player.experienceLevel) + " / " + cost + " XP";
 		
 		super.drawButton(mc, mx, my);
 	}
