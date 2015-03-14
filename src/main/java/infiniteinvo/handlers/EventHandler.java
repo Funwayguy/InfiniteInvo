@@ -179,7 +179,7 @@ public class EventHandler
 			{
 				ItemStack stack = player.inventory.mainInventory[i];
 				
-				if(player.inventory instanceof BigInventoryPlayer && (i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
+				if(player.inventory instanceof BigInventoryPlayer && (i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote)// && !player.capabilities.isCreativeMode)
 				{
 					if(stack != null && stack.getItem() != InfiniteInvo.locked)
 					{
@@ -243,10 +243,12 @@ public class EventHandler
 	{
 		if(event.gui != null && event.gui.getClass() == GuiInventory.class && !(event.gui instanceof GuiBigInventory))
 		{
-			//if(!II_Settings.vanillaInvo)
-			{
-				event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
-			}
+			event.gui = new GuiBigInventory(Minecraft.getMinecraft().thePlayer);
+		} else if(event.gui == null && Minecraft.getMinecraft().thePlayer.inventoryContainer instanceof BigContainerPlayer)
+		{
+			// Reset scroll and inventory slot positioning to make sure it doesn't screw up later
+			((BigContainerPlayer)Minecraft.getMinecraft().thePlayer.inventoryContainer).scrollPos = 0;
+			((BigContainerPlayer)Minecraft.getMinecraft().thePlayer.inventoryContainer).UpdateScroll();
 		}
 	}
 	

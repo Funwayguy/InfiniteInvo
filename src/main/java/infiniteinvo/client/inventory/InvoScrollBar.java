@@ -81,6 +81,7 @@ public class InvoScrollBar extends GuiButton
 					InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots (" + s.getClass() + ") are being used!");
 					return false;
 				}
+				
 				Slot r = new SlotLockable(s.inventory, index + 9, s.xDisplayPosition, s.yDisplayPosition);
 				
 				// Replace the local slot with our own tweaked one so that locked slots are handled properly
@@ -303,6 +304,7 @@ public class InvoScrollBar extends GuiButton
     			{
     				this.InitDefault();
     			}
+    			doScroll(0);
     			return;
     		}
     		
@@ -371,13 +373,11 @@ public class InvoScrollBar extends GuiButton
 			return;
 		}
 		
-		int preScroll = scrollPos;
-		
 		scrollPos -= (int)Math.signum(scrollDX);
 		
 		scrollPos = MathHelper.clamp_int(scrollPos, 0, maxScroll);
 		
-		if(preScroll != scrollPos && !creative)
+		if(!creative)
 		{
 			for(int i = 0; i < invoSlots.length; i++)
 			{
@@ -389,8 +389,6 @@ public class InvoScrollBar extends GuiButton
 					s.onSlotChanged();
 				}
 			}
-			
-			container.detectAndSendChanges();
 			
 			NBTTagCompound scrollTags = new NBTTagCompound();
 			scrollTags.setInteger("ID", 2);

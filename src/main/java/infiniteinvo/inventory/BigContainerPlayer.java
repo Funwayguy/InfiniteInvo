@@ -1,12 +1,15 @@
 package infiniteinvo.inventory;
 
 import infiniteinvo.core.II_Settings;
+import infiniteinvo.core.InfiniteInvo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import org.apache.logging.log4j.Level;
 
 public class BigContainerPlayer extends ContainerPlayer
 {
@@ -84,6 +87,18 @@ public class BigContainerPlayer extends ContainerPlayer
         }
         
         this.UpdateScroll();
+	}
+	
+	@Override
+	public Slot getSlotFromInventory(IInventory invo, int id)
+	{
+		Slot slot = super.getSlotFromInventory(invo, id);
+		if(slot == null)
+		{
+			Exception e = new NullPointerException();
+			InfiniteInvo.logger.log(Level.FATAL, e.getStackTrace()[1].getClassName() + "." + e.getStackTrace()[1].getMethodName() + ":" + e.getStackTrace()[1].getLineNumber() + " is requesting slot " + id + " from inventory " + invo.getInventoryName() + " (" + invo.getClass().getName() + ") and got NULL!", e);
+		}
+		return slot;
 	}
 	
 	public void UpdateScroll()

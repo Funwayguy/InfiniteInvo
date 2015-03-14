@@ -1,9 +1,7 @@
 package infiniteinvo.inventory;
 
-import java.util.concurrent.Callable;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import infiniteinvo.core.II_Settings;
+import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +12,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BigInventoryPlayer extends InventoryPlayer
 {
@@ -35,6 +35,17 @@ public class BigInventoryPlayer extends InventoryPlayer
 		
 		this.armorInventory = oldArmor;
 	}
+	
+	@Override
+	public void setInventorySlotContents(int slot, ItemStack stack) // TODO: Creative inventory middle click fix
+    {
+		/*if(this.player.capabilities.isCreativeMode && this.player.worldObj.isRemote)
+		{
+            Minecraft.getMinecraft().playerController.sendSlotPacket(stack, slot);
+		}*/
+		
+		super.setInventorySlotContents(slot, stack);
+    }
 	
 	public int getUnlockedSlots()
 	{
@@ -109,7 +120,6 @@ public class BigInventoryPlayer extends InventoryPlayer
     @Override
     public void func_146030_a(Item p_146030_1_, int p_146030_2_, boolean p_146030_3_, boolean p_146030_4_)
     {
-        boolean flag2 = true;
         this.currentItemStack = this.getCurrentItem();
         int k;
 

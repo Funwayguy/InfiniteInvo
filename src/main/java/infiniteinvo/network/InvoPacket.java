@@ -49,6 +49,7 @@ public class InvoPacket implements IMessage
 	
 	public static class HandleServer implements IMessageHandler<InvoPacket,IMessage>
 	{
+		@SuppressWarnings("unchecked")
 		@Override
 		public IMessage onMessage(InvoPacket message, MessageContext ctx)
 		{
@@ -163,7 +164,7 @@ public class InvoPacket implements IMessage
 					
 					if(world == null)
 					{
-						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
+						InfiniteInvo.logger.log(Level.WARN, "Custom Invo Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
 						return null;
 					}
 					
@@ -186,13 +187,15 @@ public class InvoPacket implements IMessage
 						numList.add(num);
 					}
 					
-					Slot[] invoSlots = new Slot[27];
+					//Slot[] invoSlots = new Slot[numbers.length]; // Possible use later
 					Container container = player.openContainer;
 					
-					int index = 0;
-					for(int i = 0; i < container.inventorySlots.size() && index < 27; i++)
+					for(int i = 0; i < numbers.length; i++)
 					{
-						Slot s = (Slot)container.inventorySlots.get(i);
+						int sNum = numbers[i];
+						int sInx = indexes[i];
+						
+						Slot s = (Slot)container.inventorySlots.get(sNum);
 						
 						if(s.inventory instanceof InventoryPlayer && numList.contains(s.slotNumber))
 						{
@@ -204,29 +207,19 @@ public class InvoPacket implements IMessage
 									return null;
 								} else if(!(s instanceof SlotLockable))
 								{
-									Slot r = new SlotLockable(s.inventory, s.getSlotIndex(), s.xDisplayPosition, s.yDisplayPosition);
+									Slot r = new SlotLockable(s.inventory, sInx + (scrollPos * 9), s.xDisplayPosition, s.yDisplayPosition);
 									
 									// Replace the local slot with our own tweaked one so that locked slots are handled properly
 									container.inventorySlots.set(i, r);
-									r.slotNumber = i;
+									r.slotNumber = s.slotNumber;
 									s = r;
 									// Update the item stack listing.
 									container.inventoryItemStacks.set(i, r.getStack());
 									r.onSlotChanged();
 								}
 							}
-							invoSlots[index] = s;
-							index++;
-						}
-					}
-					
-					for(int i = 0; i < invoSlots.length; i++)
-					{
-						Slot s = invoSlots[i];
-						if(s != null && s instanceof SlotLockable)
-						{
-							((SlotLockable)s).slotIndex = indexes[i] + (scrollPos * 9);
-							s.onSlotChanged();
+							
+							//invoSlots[i] = s;
 						}
 					}
 					

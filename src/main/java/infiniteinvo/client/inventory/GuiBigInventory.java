@@ -30,8 +30,12 @@ public class GuiBigInventory extends GuiInventory
 	public void initGui()
 	{
 		super.initGui();
-		unlock = new GuiButtonUnlockSlot(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, container.invo.player);
-		this.buttonList.add(unlock);
+		
+		if(!this.mc.playerController.isInCreativeMode())
+		{
+			unlock = new GuiButtonUnlockSlot(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, container.invo.player);
+			this.buttonList.add(unlock);
+		}
 	}
 	
 	@Override
