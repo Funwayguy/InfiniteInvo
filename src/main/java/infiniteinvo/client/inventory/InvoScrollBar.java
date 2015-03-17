@@ -38,6 +38,8 @@ public class InvoScrollBar extends GuiButton
 	int scrollX = 0;
 	int scrollY = Integer.MAX_VALUE;
 	
+	boolean firstSync = false;
+	
 	public InvoScrollBar(int id, int posX, int posY, int width, int height, String title, Container container, GuiContainer gui)
 	{
 		super(id, posX, posY, width, height, title);
@@ -86,14 +88,14 @@ public class InvoScrollBar extends GuiButton
 				
 				// Replace the local slot with our own tweaked one so that locked slots are handled properly
 				container.inventorySlots.set(i, r);
-				r.slotNumber = i;
+				r.slotNumber = s.slotNumber;
 				s = r;
 				container.inventoryItemStacks.set(i, r.getStack());
 				r.onSlotChanged();
 				
 				invoSlots[index] = s;
 				slotIndex[0][index] = s.getSlotIndex();
-				slotIndex[1][index] = s.slotNumber;
+				slotIndex[1][index] = i;
 				slotPos[index][0] = s.xDisplayPosition;
 				slotPos[index][1] = s.yDisplayPosition;
 				
@@ -121,16 +123,6 @@ public class InvoScrollBar extends GuiButton
 			maxScroll = MathHelper.ceiling_float_int((float)(II_Settings.invoSize - 27)/9F);
 		}
 		
-		NBTTagCompound scrollTags = new NBTTagCompound();
-		scrollTags.setInteger("ID", 2);
-		scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
-		scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
-		scrollTags.setInteger("Scroll", 0);
-		scrollTags.setIntArray("Indexes", slotIndex[0]);
-		scrollTags.setIntArray("Numbers", slotIndex[1]);
-		scrollTags.setBoolean("Reset", true);
-		InfiniteInvo.instance.network.sendToServer(new InvoPacket(scrollTags));
-		
 		return true;
 	}
 	
@@ -150,7 +142,7 @@ public class InvoScrollBar extends GuiButton
 		{
 			Slot s = (Slot)container.inventorySlots.get(i);
 			
-			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9)// && s.getSlotIndex() < II_Settings.invoSize + 27)
+			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < II_Settings.invoSize + 27)
 			{
 				if(s.getSlotIndex() >= 36 && s.getSlotIndex() < 36 + 9)
 				{
@@ -306,6 +298,12 @@ public class InvoScrollBar extends GuiButton
     			}
     			doScroll(0);
     			return;
+    		} else if(firstSync && !creative)
+    		{
+    			firstSync = true;
+    			scrollPos = 0;
+    			doScroll(0);
+    			return;
     		}
     		
     		for(int i = 0; i < this.invoSlots.length; i++)
@@ -402,7 +400,7 @@ public class InvoScrollBar extends GuiButton
 			scrollTags.setInteger("Scroll", scrollPos);
 			scrollTags.setIntArray("Indexes", slotIndex[0]);
 			scrollTags.setIntArray("Numbers", slotIndex[1]);
-			scrollTags.setBoolean("Reset", false);
+			scrollTags.setInteger("Container ID", this.container.windowId);
 			InfiniteInvo.instance.network.sendToServer(new InvoPacket(scrollTags));
 		}
 	}

@@ -10,8 +10,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -163,7 +166,7 @@ public class InvoPacket implements IMessage
 					
 					if(world == null)
 					{
-						InfiniteInvo.logger.log(Level.WARN, "Custom Invo Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
+						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
 						return null;
 					}
 					
@@ -171,15 +174,29 @@ public class InvoPacket implements IMessage
 					int scrollPos = message.tags.getInteger("Scroll");
 					int[] indexes = message.tags.getIntArray("Indexes");
 					int[] numbers = message.tags.getIntArray("Numbers");
-					boolean resetSlots = message.tags.getBoolean("Reset");
+					int conID = message.tags.getInteger("Container ID");
 					
 					if(player == null || player.getEntityData() == null)
 					{
-						InfiniteInvo.logger.log(Level.WARN, "Custom Invo Sync Failed! Reason: Unabled to get data for player '" + message.tags.getString("Player") + "'");
+						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Reason: Unabled to get data for player '" + message.tags.getString("Player") + "'");
 						return null;
 					}
 					
 					Container container = player.openContainer;
+					
+					if(container.windowId != conID)
+					{
+						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Server hasn't opened the matching container yet...");
+						return null;
+					}
+					
+					if(container.inventorySlots.size() < numbers.length)
+					{
+						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Only found " + container.inventorySlots.size() + " / " + numbers.length + " requested slots");
+						return null;
+					}
+					
+					boolean flag = true;
 					
 					for(int i = 0; i < numbers.length; i++)
 					{
@@ -188,26 +205,34 @@ public class InvoPacket implements IMessage
 						
 						Slot s = (Slot)container.inventorySlots.get(sNum);
 						
-						if(s.inventory instanceof InventoryPlayer)
+						if(s.inventory instanceof InventoryPlayer) // Not 100% necessary anymore but here as a fail safe
 						{
-							if(resetSlots)
+							if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
 							{
-								if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
-								{
-									InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots (" + s.getClass().getSimpleName() + ") are being used!");
-									return null;
-								} else if(!(s instanceof SlotLockable))
-								{
-									Slot r = new SlotLockable(s.inventory, sInx + (scrollPos * 9), s.xDisplayPosition, s.yDisplayPosition);
-									
-									// Replace the local slot with our own tweaked one so that locked slots are handled properly
-									container.inventorySlots.set(s.slotNumber, r);
-									r.slotNumber = s.slotNumber;
-									s = r;
-									// Update the item stack listing.
-									container.inventoryItemStacks.set(s.slotNumber, r.getStack());
-									r.onSlotChanged();
-								}
+								InfiniteInvo.logger.log(Level.WARN, "Container " + container.getClass().getSimpleName() + " is not supported by InfiniteInvo! Reason: Custom Slots (" + s.getClass().getSimpleName() + ") are being used!");
+								return null;
+							} else if(!(s instanceof SlotLockable))
+							{
+								Slot r = new SlotLockable(s.inventory, sInx + (scrollPos * 9), s.xDisplayPosition, s.yDisplayPosition);
+								
+								// Replace the local slot with our own tweaked one so that locked slots are handled properly
+								container.inventorySlots.set(sNum, r);
+								r.slotNumber = s.slotNumber;
+								s = r;
+								// Update the item stack listing.
+								container.inventoryItemStacks.set(sNum, r.getStack());
+								r.onSlotChanged();
+							} else
+							{
+								((SlotLockable)s).slotIndex = sInx + (scrollPos * 9);
+							}
+							
+							//s.putStack(new ItemStack(Blocks.stone, s.getSlotIndex())); // Debugging to visualise the location and slot indexes serverside
+							
+							if(flag && container.getSlotFromInventory(player.inventory, player.inventory.currentItem) == null)
+							{
+								flag = false;
+								InfiniteInvo.logger.log(Level.WARN, "Slot broke at index " + s.getSlotIndex() + "(Scroll: " + scrollPos + ", Pass: " + i + "/" + numbers.length + ")");
 							}
 						}
 					}
