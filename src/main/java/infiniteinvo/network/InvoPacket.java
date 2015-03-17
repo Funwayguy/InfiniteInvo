@@ -7,7 +7,6 @@ import infiniteinvo.core.XPHelper;
 import infiniteinvo.handlers.EventHandler;
 import infiniteinvo.inventory.SlotLockable;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -180,14 +179,6 @@ public class InvoPacket implements IMessage
 						return null;
 					}
 					
-					ArrayList<Integer> numList = new ArrayList<Integer>(); // Valid slot numbers that represent the player's inventory
-					
-					for(int num : numbers)
-					{
-						numList.add(num);
-					}
-					
-					//Slot[] invoSlots = new Slot[numbers.length]; // Possible use later
 					Container container = player.openContainer;
 					
 					for(int i = 0; i < numbers.length; i++)
@@ -197,7 +188,7 @@ public class InvoPacket implements IMessage
 						
 						Slot s = (Slot)container.inventorySlots.get(sNum);
 						
-						if(s.inventory instanceof InventoryPlayer && numList.contains(s.slotNumber))
+						if(s.inventory instanceof InventoryPlayer)
 						{
 							if(resetSlots)
 							{
@@ -210,16 +201,14 @@ public class InvoPacket implements IMessage
 									Slot r = new SlotLockable(s.inventory, sInx + (scrollPos * 9), s.xDisplayPosition, s.yDisplayPosition);
 									
 									// Replace the local slot with our own tweaked one so that locked slots are handled properly
-									container.inventorySlots.set(i, r);
+									container.inventorySlots.set(s.slotNumber, r);
 									r.slotNumber = s.slotNumber;
 									s = r;
 									// Update the item stack listing.
-									container.inventoryItemStacks.set(i, r.getStack());
+									container.inventoryItemStacks.set(s.slotNumber, r.getStack());
 									r.onSlotChanged();
 								}
 							}
-							
-							//invoSlots[i] = s;
 						}
 					}
 					

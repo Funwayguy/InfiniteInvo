@@ -236,7 +236,7 @@ public class InvoScrollBar extends GuiButton
 	
 	int dragging = 0;
 	
-	public void drawButton(Minecraft p_146112_1_, int mx, int my)
+	public void drawButton(Minecraft mc, int mx, int my)
     {
 		if(refresh > 0)
 		{
@@ -280,7 +280,7 @@ public class InvoScrollBar extends GuiButton
     		dragging = 0;
     	}
 		
-        p_146112_1_.getTextureManager().bindTexture(new ResourceLocation("infiniteinvo", "textures/gui/adjustable_gui.png"));
+        mc.getTextureManager().bindTexture(new ResourceLocation("infiniteinvo", "textures/gui/adjustable_gui.png"));
         
         if(maxScroll > 0)
         {
@@ -362,6 +362,11 @@ public class InvoScrollBar extends GuiButton
         				s.yDisplayPosition = slotPos[i][1];
         			}
     			}
+    			
+    			// Debug stuffs that renders the slot IDs
+    			//this.drawString(mc.fontRenderer, "" + s.getSlotIndex(), s.xDisplayPosition + this.guiLeft, s.yDisplayPosition + this.guiTop + 4, 16777120);
+    	        //mc.getTextureManager().bindTexture(new ResourceLocation("infiniteinvo", "textures/gui/adjustable_gui.png"));
+                //GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         	}
         }
     }

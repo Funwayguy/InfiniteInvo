@@ -204,7 +204,6 @@ public class EventHandler
 				} else
 				{
 					flag = false;
-					//break;
 				}
 			}
 			
@@ -227,7 +226,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent event)
 	{
-		if(event.entityLiving instanceof EntityPlayer/* && !event.entityLiving.worldObj.isRemote*/)
+		if(event.entityLiving instanceof EntityPlayer)
 		{
 			if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
 			{
@@ -259,7 +258,7 @@ public class EventHandler
 		if(event.gui instanceof GuiBigInventory)
 		{
 			((GuiBigInventory)event.gui).redoButtons = true;
-		} else if(event.gui instanceof GuiContainer)// && !(event.gui instanceof GuiContainerCreative))
+		} else if(event.gui instanceof GuiContainer)
 		{
 			GuiContainer gui = (GuiContainer)event.gui;
 			Container container = gui.inventorySlots;
