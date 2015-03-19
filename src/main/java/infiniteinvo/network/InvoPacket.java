@@ -10,11 +10,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -109,7 +106,7 @@ public class InvoPacket implements IMessage
 						return new InvoPacket(replyTags);
 						
 					}
-				} else if(message.tags.getInteger("ID") == 1)
+				} else if(message.tags.getInteger("ID") == 1) // Requesting what slots have been unlocked and the server side settings
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					
@@ -149,7 +146,7 @@ public class InvoPacket implements IMessage
 						player.addStat(InvoAchievements.unlockFirst, 1);
 					}
 					
-					if(unlocked + II_Settings.unlockedSlots == II_Settings.invoSize || !II_Settings.xpUnlock)
+					if(unlocked + II_Settings.unlockedSlots >= II_Settings.invoSize || !II_Settings.xpUnlock)
 					{
 						player.addStat(InvoAchievements.unlockAll, 1);
 					}
@@ -254,7 +251,18 @@ public class InvoPacket implements IMessage
 				if(message.tags.getInteger("ID") == 0)
 				{
 					EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-					player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", message.tags.getInteger("Unlocked"));
+					
+					if(!message.tags.hasKey("Player") || !message.tags.getString("Player").equals(player.getCommandSenderName()))
+					{
+						InfiniteInvo.logger.log(Level.ERROR, "Server sent packet to the wrong player! Intended target: " + message.tags.getString("Player") + ", Recipient: " + player.getCommandSenderName());
+						return null;
+					}
+					
+					if(message.tags.hasKey("Unlocked"))
+					{
+						InfiniteInvo.logger.log(Level.INFO, "Loading serverside unlocks...");
+						player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", message.tags.getInteger("Unlocked"));
+					}
 					
 					if(message.tags.hasKey("Settings"))
 					{

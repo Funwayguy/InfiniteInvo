@@ -291,14 +291,18 @@ public class InvoScrollBar extends GuiButton
     		{
     			if(creative)
     			{
-    				this.InitCreative();
+    				enabled = this.InitCreative();
     			} else
     			{
-    				this.InitDefault();
+    				enabled = this.InitDefault();
     			}
-    			doScroll(0);
+    			
+    			if(enabled && !(invoSlots.length <= 0 || invoSlots[0] == null))
+    			{
+    				doScroll(0);
+    			}
     			return;
-    		} else if(firstSync && !creative)
+    		} else if(!firstSync && !creative)
     		{
     			firstSync = true;
     			scrollPos = 0;

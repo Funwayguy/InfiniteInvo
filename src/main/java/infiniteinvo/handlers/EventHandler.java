@@ -209,7 +209,7 @@ public class EventHandler
 			
 			if(!event.entityLiving.isEntityAlive())
 			{
-				if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+				if(!II_Settings.keepUnlocks && !event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
 				{
 					unlockCache.remove(event.entityLiving.getCommandSenderName());
 					unlockCache.remove(event.entityLiving.getUniqueID().toString());
@@ -228,7 +228,7 @@ public class EventHandler
 	{
 		if(event.entityLiving instanceof EntityPlayer)
 		{
-			if(!II_Settings.keepUnlocks || event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+			if(!II_Settings.keepUnlocks && !event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
 			{
 				unlockCache.remove(event.entityLiving.getCommandSenderName());
 				unlockCache.remove(event.entityLiving.getUniqueID().toString());
