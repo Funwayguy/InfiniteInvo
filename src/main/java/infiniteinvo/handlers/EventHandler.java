@@ -179,7 +179,7 @@ public class EventHandler
 			{
 				ItemStack stack = player.inventory.mainInventory[i];
 				
-				if(player.inventory instanceof BigInventoryPlayer && (i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote)// && !player.capabilities.isCreativeMode)
+				if(player.inventory instanceof BigInventoryPlayer && (i >= ((BigInventoryPlayer)player.inventory).getUnlockedSlots() || i - 9 >= II_Settings.invoSize) && !event.entityLiving.worldObj.isRemote && !player.capabilities.isCreativeMode)
 				{
 					if(stack != null && stack.getItem() != InfiniteInvo.locked)
 					{

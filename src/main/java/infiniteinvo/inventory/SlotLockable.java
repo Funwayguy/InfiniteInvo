@@ -36,7 +36,7 @@ public class SlotLockable extends Slot
     	if(!(this.inventory instanceof BigInventoryPlayer))
     	{
             return this.inventory.getStackInSlot(this.slotIndex);
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize)
+    	} else if(isUnlocked((BigInventoryPlayer)this.inventory))
     	{
             return this.inventory.getStackInSlot(this.slotIndex);
     	} else
@@ -52,7 +52,7 @@ public class SlotLockable extends Slot
     	{
     		InfiniteInvo.logger.log(Level.WARN, "Modified slot used for non modified inventory!");
     		return true;
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize)
+    	} else if(isUnlocked((BigInventoryPlayer)this.inventory))
     	{
     		return true;
     	} else
@@ -68,7 +68,7 @@ public class SlotLockable extends Slot
     	{
     		InfiniteInvo.logger.log(Level.WARN, "Modified slot used for non modified inventory!");
     		return true;
-    	} else if(((BigInventoryPlayer)this.inventory).getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize)
+    	} else if(isUnlocked((BigInventoryPlayer)this.inventory))
     	{
     		return true;
     	} else
@@ -106,8 +106,20 @@ public class SlotLockable extends Slot
     /**
      * Returns if this slot contains a stack.
      */
+	@Override
     public boolean getHasStack()
     {
         return this.getStack() != null && (this.getStack().getItem() != InfiniteInvo.locked || !II_Settings.IT_Patch);
     }
+	
+	public boolean isUnlocked(BigInventoryPlayer invo)
+	{
+		if(invo.player.capabilities.isCreativeMode)
+		{
+			return true;
+		} else
+		{
+			return invo.getUnlockedSlots() > this.slotIndex && this.slotIndex - 9 < II_Settings.invoSize;
+		}
+	}
 }

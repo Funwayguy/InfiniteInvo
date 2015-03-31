@@ -76,7 +76,7 @@ public class InvoScrollBar extends GuiButton
 		{
 			Slot s = (Slot)container.inventorySlots.get(i);
 			
-			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < II_Settings.invoSize + 9)
+			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < (II_Settings.invoSize < 27? 27 : II_Settings.invoSize) + 9)
 			{
 				if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
 				{
@@ -242,7 +242,8 @@ public class InvoScrollBar extends GuiButton
 		
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		UpdateGuiPos();
-		int scrollDX = (int)Math.signum(Mouse.getDWheel());
+		float tmp = Mouse.getDWheel();
+		int scrollDX = (int)Math.signum(tmp);
 		
 		if(scrollDX != 0)
 		{

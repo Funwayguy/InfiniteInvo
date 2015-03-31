@@ -32,7 +32,7 @@ public class ItemLockedSlot extends Item
 			if(player.inventory instanceof BigInventoryPlayer)
 			{
 				BigInventoryPlayer invo = (BigInventoryPlayer)player.inventory;
-				if(slot < invo.getUnlockedSlots())
+				if(slot < invo.getUnlockedSlots() || player.capabilities.isCreativeMode)
 				{
 					invo.setInventorySlotContents(slot, null);
 				}
