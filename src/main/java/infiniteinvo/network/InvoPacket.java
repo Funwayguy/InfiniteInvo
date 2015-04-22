@@ -5,11 +5,11 @@ import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.core.XPHelper;
 import infiniteinvo.handlers.EventHandler;
+import infiniteinvo.inventory.BigInventoryPlayer;
 import infiniteinvo.inventory.SlotLockable;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
@@ -181,9 +181,13 @@ public class InvoPacket implements IMessage
 					
 					Container container = player.openContainer;
 					
-					if(container.windowId != conID)
+					if(container == null)
 					{
-						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Server hasn't opened the matching container yet...");
+						InfiniteInvo.logger.log(Level.ERROR, "Inventory Sync Failed! No container open on server!");
+						return null;
+					} else if(container.windowId != conID)
+					{
+						InfiniteInvo.logger.log(Level.ERROR, "Inventory Sync Failed! Container ID mismatch (Client: " + conID + ", Server: " + container.windowId + ")");
 						return null;
 					}
 					
@@ -202,7 +206,7 @@ public class InvoPacket implements IMessage
 						
 						Slot s = (Slot)container.inventorySlots.get(sNum);
 						
-						if(s.inventory instanceof InventoryPlayer) // Not 100% necessary anymore but here as a fail safe
+						if(s.inventory instanceof BigInventoryPlayer) // Not 100% necessary anymore but here as a fail safe
 						{
 							if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
 							{

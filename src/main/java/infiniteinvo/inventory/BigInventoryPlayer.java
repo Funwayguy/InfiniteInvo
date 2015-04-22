@@ -49,7 +49,7 @@ public class BigInventoryPlayer extends InventoryPlayer
 	
 	public int getUnlockedSlots()
 	{
-		int unlocked = II_Settings.xpUnlock? II_Settings.unlockedSlots + 9 + this.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") : this.mainInventory.length;
+		int unlocked = II_Settings.xpUnlock && !this.player.capabilities.isCreativeMode? II_Settings.unlockedSlots + 9 + this.player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED") : this.mainInventory.length;
 		
 		unlocked = unlocked <= this.mainInventory.length? unlocked : this.mainInventory.length;
 		
@@ -261,7 +261,8 @@ public class BigInventoryPlayer extends InventoryPlayer
     /**
      * Adds the item stack to the inventory, returns false if it is impossible.
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public boolean addItemStackToInventory(final ItemStack p_70441_1_)
     {
         if (p_70441_1_ != null && p_70441_1_.stackSize != 0 && p_70441_1_.getItem() != null)
@@ -319,7 +320,6 @@ public class BigInventoryPlayer extends InventoryPlayer
                 crashreportcategory.addCrashSection("Item data", Integer.valueOf(p_70441_1_.getItemDamage()));
                 crashreportcategory.addCrashSectionCallable("Item name", new Callable()
                 {
-                    private static final String __OBFID = "CL_00001710";
                     public String call()
                     {
                         return p_70441_1_.getDisplayName();

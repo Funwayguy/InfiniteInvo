@@ -23,6 +23,7 @@ public class BigContainerPlayer extends ContainerPlayer
 	Slot[] crafting = new Slot[4];
 	Slot result;
 	
+	@SuppressWarnings("unchecked")
 	public BigContainerPlayer(BigInventoryPlayer invo, boolean isLocal, EntityPlayer player)
 	{
 		super(invo, isLocal, player);

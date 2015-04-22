@@ -251,6 +251,7 @@ public class EventHandler
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onGuiPostInit(InitGuiEvent.Post event)

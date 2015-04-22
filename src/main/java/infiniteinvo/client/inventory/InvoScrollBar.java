@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,7 +37,7 @@ public class InvoScrollBar extends GuiButton
 	int scrollX = 0;
 	int scrollY = Integer.MAX_VALUE;
 	
-	boolean firstSync = false;
+	int firstSync = 2; // Tick delay till first sync. Gives containerId time to be set
 	
 	public InvoScrollBar(int id, int posX, int posY, int width, int height, String title, Container container, GuiContainer gui)
 	{
@@ -76,7 +75,7 @@ public class InvoScrollBar extends GuiButton
 		{
 			Slot s = (Slot)container.inventorySlots.get(i);
 			
-			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < (II_Settings.invoSize < 27? 27 : II_Settings.invoSize) + 9)
+			if(s.inventory == Minecraft.getMinecraft().thePlayer.inventory && s.getSlotIndex() >= 9 && s.getSlotIndex() < (II_Settings.invoSize < 27? 27 : II_Settings.invoSize) + 9)
 			{
 				if(s.getClass() != Slot.class && s.getClass() != SlotLockable.class)
 				{
@@ -142,7 +141,7 @@ public class InvoScrollBar extends GuiButton
 		{
 			Slot s = (Slot)container.inventorySlots.get(i);
 			
-			if(s.inventory instanceof InventoryPlayer && s.getSlotIndex() >= 9 && s.getSlotIndex() < II_Settings.invoSize + 27)
+			if(s.inventory == Minecraft.getMinecraft().thePlayer.inventory && s.getSlotIndex() >= 9 && s.getSlotIndex() < II_Settings.invoSize + 27)
 			{
 				if(s.getSlotIndex() >= 36 && s.getSlotIndex() < 36 + 9)
 				{
@@ -303,12 +302,15 @@ public class InvoScrollBar extends GuiButton
     				doScroll(0);
     			}
     			return;
-    		} else if(!firstSync && !creative)
+    		} else if(firstSync > 0 && !creative)
     		{
-    			firstSync = true;
-    			scrollPos = 0;
-    			doScroll(0);
-    			return;
+    			firstSync--;
+    			if(firstSync == 0)
+    			{
+	    			scrollPos = 0;
+	    			doScroll(0);
+	    			return;
+    			}
     		}
     		
     		for(int i = 0; i < this.invoSlots.length; i++)

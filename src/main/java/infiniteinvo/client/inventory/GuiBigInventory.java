@@ -26,6 +26,7 @@ public class GuiBigInventory extends GuiInventory
 		this.ySize = 137 + (18 * II_Settings.extraRows) + 29;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui()
 	{
