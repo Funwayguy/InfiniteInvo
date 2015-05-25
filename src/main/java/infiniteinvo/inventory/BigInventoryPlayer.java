@@ -25,15 +25,24 @@ public class BigInventoryPlayer extends InventoryPlayer
 		super(player);
 		this.mainInventory = new ItemStack[MathHelper.clamp_int(II_Settings.invoSize, 27, Integer.MAX_VALUE - 100) + 9];
 		
-		ItemStack[] oldMain = player.inventory.mainInventory;
-		ItemStack[] oldArmor = player.inventory.armorInventory;
-		
-		for(int i = 0; i < this.mainInventory.length && i < oldMain.length; i++)
+		if(player.inventory != null)
 		{
-			this.mainInventory[i] = oldMain[i];
+			ItemStack[] oldMain = player.inventory.mainInventory;
+			ItemStack[] oldArmor = player.inventory.armorInventory;
+			
+			for(int i = 0; i < this.mainInventory.length && i < oldMain.length; i++)
+			{
+				this.mainInventory[i] = oldMain[i];
+			}
+			
+			this.armorInventory = oldArmor;
 		}
-		
-		this.armorInventory = oldArmor;
+	}
+	
+	@Override
+	public void dropAllItems()
+	{
+		super.dropAllItems();
 	}
 	
 	@Override
@@ -386,18 +395,12 @@ public class BigInventoryPlayer extends InventoryPlayer
             {
                 if (j >= 0 && j < this.mainInventory.length)
                 {
-                	if(this.mainInventory[j] == null)
-                	{
-                		this.mainInventory[j] = itemstack;
-                	}
+            		this.mainInventory[j] = itemstack;
                 }
 
                 if (j >= (Integer.MAX_VALUE - 100) && j <= Integer.MAX_VALUE)
                 {
-                	if(this.armorInventory[j - (Integer.MAX_VALUE - 100)] == null)
-                	{
-                		this.armorInventory[j - (Integer.MAX_VALUE - 100)] = itemstack;
-                	}
+            		this.mainInventory[j] = itemstack;
                 }
             }
         }

@@ -8,6 +8,7 @@ import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
 import infiniteinvo.inventory.BigInventoryPlayer;
+import infiniteinvo.inventory.InventoryPersistProperty;
 import infiniteinvo.network.InvoPacket;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,17 +26,16 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
+import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.Level;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
@@ -51,49 +51,17 @@ public class EventHandler
 	public static HashMap<String, Container> lastOpened = new HashMap<String, Container>();
 	
 	@SubscribeEvent
-	public void onPlayerLoad(PlayerEvent.LoadFromFile event)
+	public void onEntityConstruct(EntityConstructing event) // More reliable than on entity join
 	{
-		EntityPlayer player = event.entityPlayer;
-		player.inventory = new BigInventoryPlayer(player);
-		player.inventoryContainer = new BigContainerPlayer((BigInventoryPlayer)player.inventory, !player.worldObj.isRemote, player);
-		player.openContainer = player.inventoryContainer;
-		
-		// Reload NBT tags from file for the new inventory replacement
-        NBTTagCompound nbttagcompound = null;
-
-        try
-        {
-            File file1 = new File(event.playerDirectory, player.getUniqueID().toString() + ".dat");
-
-            if (file1.exists() && file1.isFile())
-            {
-                nbttagcompound = CompressedStreamTools.readCompressed(new FileInputStream(file1));
-            }
-        }
-        catch (Exception exception)
-        {
-            InfiniteInvo.logger.warn("Failed to load player data for " + player.getCommandSenderName());
-        }
-
-        if (nbttagcompound != null)
-        {
-            player.inventory.readFromNBT(nbttagcompound.getTagList("Inventory", 10));
-        }
-	}
-	
-	@SubscribeEvent
-	public void onPlayerClone(PlayerEvent.Clone event)
-	{
-		EntityPlayer player = event.entityPlayer;
-		if(event.wasDeath)// && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+		if(event.entity instanceof EntityPlayer)
 		{
-			player.inventory = new BigInventoryPlayer(player);
-			player.inventoryContainer = new BigContainerPlayer((BigInventoryPlayer)player.inventory, !player.worldObj.isRemote, player);
-			player.openContainer = player.inventoryContainer;
+			EntityPlayer player = (EntityPlayer)event.entity;
 			
-			player.inventory.readFromNBT(event.original.inventory.writeToNBT(new NBTTagList()));
+			if(InventoryPersistProperty.get(player) == null)
+			{
+				InventoryPersistProperty.Register(player);
+			}
 		}
-		//event.original
 	}
 	
 	@SubscribeEvent
@@ -103,11 +71,9 @@ public class EventHandler
 		{
 			EntityPlayer player = (EntityPlayer)event.entity;
 			
-			if(!(player.inventory instanceof BigInventoryPlayer))
+			if(InventoryPersistProperty.get(player) != null)
 			{
-				player.inventory = new BigInventoryPlayer(player);
-				player.inventoryContainer = new BigContainerPlayer((BigInventoryPlayer)player.inventory, !player.worldObj.isRemote, player);
-				player.openContainer = player.inventoryContainer;
+				InventoryPersistProperty.get(player).onJoinWorld();
 			}
 			
 			if(event.world.isRemote)
@@ -174,6 +140,7 @@ public class EventHandler
 		if(event.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)event.entityLiving;
+			
 			boolean flag = true;
 			for(int i = 9; i < player.inventory.mainInventory.length; i++)
 			{
@@ -232,6 +199,11 @@ public class EventHandler
 			{
 				unlockCache.remove(event.entityLiving.getCommandSenderName());
 				unlockCache.remove(event.entityLiving.getUniqueID().toString());
+			}
+			
+			if(!event.entityLiving.worldObj.isRemote && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+			{
+				InventoryPersistProperty.keepInvoCache.put(event.entityLiving.getUniqueID(), ((EntityPlayer)event.entityLiving).inventory.writeToNBT(new NBTTagList()));
 			}
 		}
 	}
@@ -316,6 +288,7 @@ public class EventHandler
 			
 			worldDir = null;
 			unlockCache.clear();
+			InventoryPersistProperty.keepInvoCache.clear();
 		}
 	}
 	

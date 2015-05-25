@@ -1,6 +1,7 @@
 package infiniteinvo.client.inventory;
 
 import infiniteinvo.core.II_Settings;
+import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
@@ -9,6 +10,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -24,6 +26,17 @@ public class GuiBigInventory extends GuiInventory
 		container = player.inventoryContainer instanceof BigContainerPlayer? (BigContainerPlayer)player.inventoryContainer : null;
 		this.xSize = 169 + (18 * II_Settings.extraColumns) + 15;
 		this.ySize = 137 + (18 * II_Settings.extraRows) + 29;
+		
+		if(container == null)
+		{
+			if(player.inventoryContainer != null)
+			{
+				InfiniteInvo.logger.log(Level.WARN, "GUI opened with container " + player.inventoryContainer.getClass().getSimpleName() + "!", new IllegalArgumentException());
+			} else
+			{
+				InfiniteInvo.logger.log(Level.WARN, "GUI opened with null container!", new NullPointerException());
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -32,7 +45,7 @@ public class GuiBigInventory extends GuiInventory
 	{
 		super.initGui();
 		
-		if(!this.mc.playerController.isInCreativeMode())
+		if(!this.mc.playerController.isInCreativeMode() && container != null)
 		{
 			unlock = new GuiButtonUnlockSlot(100, this.guiLeft + 87, this.guiTop + 7, 74, 18, container.invo.player);
 			this.buttonList.add(unlock);
@@ -42,8 +55,11 @@ public class GuiBigInventory extends GuiInventory
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_)
 	{
-		unlock.xPosition = this.guiLeft + 87;
-		unlock.yPosition = this.guiTop + 7;
+		if(unlock != null)
+		{
+			unlock.xPosition = this.guiLeft + 87;
+			unlock.yPosition = this.guiTop + 7;
+		}
 		
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(new ResourceLocation("infiniteinvo", "textures/gui/adjustable_gui.png"));

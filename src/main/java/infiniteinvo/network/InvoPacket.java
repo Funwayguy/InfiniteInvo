@@ -112,7 +112,7 @@ public class InvoPacket implements IMessage
 					
 					if(world == null)
 					{
-						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
+						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Unabled to locate dimension " + message.tags.getInteger("World"));
 						return null;
 					}
 					
@@ -120,7 +120,7 @@ public class InvoPacket implements IMessage
 					
 					if(player == null || player.getEntityData() == null)
 					{
-						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Reason: Unabled to get data for player '" + message.tags.getString("Player") + "'");
+						InfiniteInvo.logger.log(Level.WARN, "Unlock Sync Failed! Unabled to get data for player '" + message.tags.getString("Player") + "'");
 						return null;
 					}
 					
@@ -163,7 +163,7 @@ public class InvoPacket implements IMessage
 					
 					if(world == null)
 					{
-						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Reason: Unabled to locate dimension " + message.tags.getInteger("World"));
+						InfiniteInvo.logger.log(Level.ERROR, "Inventory Sync Failed! Unabled to locate dimension " + message.tags.getInteger("World"));
 						return null;
 					}
 					
@@ -175,7 +175,7 @@ public class InvoPacket implements IMessage
 					
 					if(player == null || player.getEntityData() == null)
 					{
-						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Reason: Unabled to get data for player '" + message.tags.getString("Player") + "'");
+						InfiniteInvo.logger.log(Level.ERROR, "Inventory Sync Failed! Unabled to get data for player '" + message.tags.getString("Player") + "'");
 						return null;
 					}
 					
@@ -193,7 +193,7 @@ public class InvoPacket implements IMessage
 					
 					if(container.inventorySlots.size() < numbers.length)
 					{
-						InfiniteInvo.logger.log(Level.ERROR, "Custom Invo Sync Failed! Only found " + container.inventorySlots.size() + " / " + numbers.length + " requested slots");
+						InfiniteInvo.logger.log(Level.ERROR, "Inventory Sync Failed! Only found " + container.inventorySlots.size() + " / " + numbers.length + " requested slots");
 						return null;
 					}
 					
