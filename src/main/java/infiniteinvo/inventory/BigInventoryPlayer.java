@@ -383,7 +383,7 @@ public class BigInventoryPlayer extends InventoryPlayer
     public void readFromNBT(NBTTagList p_70443_1_)
     {
         this.mainInventory = new ItemStack[MathHelper.clamp_int(II_Settings.invoSize, 27, Integer.MAX_VALUE - 100) + 9];
-        this.armorInventory = new ItemStack[4];
+        this.armorInventory = new ItemStack[armorInventory == null? 4 : armorInventory.length]; // Just in case it isn't standard size
         
         for (int i = 0; i < p_70443_1_.tagCount(); ++i)
         {
@@ -400,7 +400,7 @@ public class BigInventoryPlayer extends InventoryPlayer
 
                 if (j >= (Integer.MAX_VALUE - 100) && j <= Integer.MAX_VALUE)
                 {
-            		this.mainInventory[j] = itemstack;
+            		this.armorInventory[j] = itemstack;
                 }
             }
         }
