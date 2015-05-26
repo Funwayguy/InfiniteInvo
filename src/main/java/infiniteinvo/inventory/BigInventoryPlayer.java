@@ -398,9 +398,9 @@ public class BigInventoryPlayer extends InventoryPlayer
             		this.mainInventory[j] = itemstack;
                 }
 
-                if (j >= (Integer.MAX_VALUE - 100) && j <= Integer.MAX_VALUE)
+                if (j >= (Integer.MAX_VALUE - 100) && j <= Integer.MAX_VALUE && j - (Integer.MAX_VALUE - 100) < this.armorInventory.length)
                 {
-            		this.armorInventory[j] = itemstack;
+            		this.armorInventory[j - (Integer.MAX_VALUE - 100)] = itemstack;
                 }
             }
         }
