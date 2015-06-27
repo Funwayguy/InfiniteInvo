@@ -1,0 +1,17 @@
+language.name=中文
+
+infiniteinvo.item.LOCKED=已上锁
+
+infiniteinvo.unlockslot=解锁容量
+
+achievement.infiniteinvo.baconpriorities=培根参上
+achievement.infiniteinvo.wormdrops=#虫洞
+achievement.infiniteinvo.bonesanta=#圣骨
+achievement.infiniteinvo.morespace=更多空间?
+achievement.infiniteinvo.allspace=深渊之囊
+
+achievement.infiniteinvo.baconpriorities.desc=用烤猪排装满背包
+achievement.infiniteinvo.wormdrops.desc=驱逐蠕虫失败 (需要Ex Nihilo)
+achievement.infiniteinvo.bonesanta.desc=把你的骸骨给某人 (SMP)
+achievement.infiniteinvo.morespace.desc=解锁一个扩展容量
+achievement.infiniteinvo.allspace.desc=解锁所有的扩展容量
