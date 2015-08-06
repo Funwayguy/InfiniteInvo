@@ -4,7 +4,10 @@ import infiniteinvo.achievements.InvoAchievements;
 import infiniteinvo.core.proxies.CommonProxy;
 import infiniteinvo.handlers.ConfigHandler;
 import infiniteinvo.item.ItemLockedSlot;
+import infiniteinvo.item.ItemUnlockSlot;
 import net.minecraft.item.Item;
+import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Logger;
 import cpw.mods.fml.common.Mod;
@@ -39,6 +42,7 @@ public class InfiniteInvo
 	 * Purely used for returning faking filled slots
 	 */
 	public static Item locked;
+	public static Item unlock;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -58,6 +62,9 @@ public class InfiniteInvo
     {
     	locked = new ItemLockedSlot();
     	GameRegistry.registerItem(locked, "locked_slot");
+    	unlock = new ItemUnlockSlot();
+    	GameRegistry.registerItem(unlock, "unlock_slot");
+    	ChestGenHooks.addItem(ChestGenHooks.DUNGEON_CHEST, new WeightedRandomChestContent(unlock, 0, 1, 3, 2));
     }
     
     @EventHandler

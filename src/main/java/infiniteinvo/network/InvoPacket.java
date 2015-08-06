@@ -54,7 +54,7 @@ public class InvoPacket implements IMessage
 		{
 			if(message.tags.hasKey("ID"))
 			{
-				if(message.tags.getInteger("ID") == 0)
+				if(message.tags.getInteger("ID") == 0) // Request slot unlock
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					
@@ -69,19 +69,27 @@ public class InvoPacket implements IMessage
 					{
 						return null;
 					}
-
+					
+					boolean useItem = message.tags.getBoolean("UseItem") && player.getHeldItem() != null && player.getHeldItem().getItem() == InfiniteInvo.unlock;
 					int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
 					int cost = II_Settings.unlockCost + (unlocked * II_Settings.unlockIncrease);
 					int totalXP = XPHelper.getPlayerXP(player);
 					
-					if(totalXP >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost)))
+					if(totalXP >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost)) || useItem)
 					{
-						if(II_Settings.useOrbs)
+						if(!useItem)
 						{
-							XPHelper.AddXP(player, -cost);
-						} else
+							if(II_Settings.useOrbs)
+							{
+								XPHelper.AddXP(player, -cost);
+							} else
+							{
+								XPHelper.AddXP(player, -XPHelper.getLevelXP(cost));
+							}
+						} else if(!player.capabilities.isCreativeMode)
 						{
-							XPHelper.AddXP(player, -XPHelper.getLevelXP(cost));
+							player.getHeldItem().stackSize--;
+							player.setCurrentItemOrArmor(0, player.getHeldItem());
 						}
 						
 						unlocked++;
@@ -106,7 +114,7 @@ public class InvoPacket implements IMessage
 						return new InvoPacket(replyTags);
 						
 					}
-				} else if(message.tags.getInteger("ID") == 1) // Requesting what slots have been unlocked and the server side settings
+				} else if(message.tags.getInteger("ID") == 1) // Sync which slots have been unlocked and the server side settings
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					
@@ -157,7 +165,7 @@ public class InvoPacket implements IMessage
 					reply.setInteger("Unlocked", unlocked);
 					reply.setTag("Settings", II_Settings.cachedSettings);
 					return new InvoPacket(reply);
-				} else if(message.tags.getInteger("ID") == 2) // Experimental
+				} else if(message.tags.getInteger("ID") == 2) // Update inventory scroll
 				{
 					WorldServer world = MinecraftServer.getServer().worldServerForDimension(message.tags.getInteger("World"));
 					

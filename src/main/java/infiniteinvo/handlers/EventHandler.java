@@ -20,6 +20,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -40,6 +41,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.Level;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent.MouseInputEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -220,6 +222,31 @@ public class EventHandler
 			// Reset scroll and inventory slot positioning to make sure it doesn't screw up later
 			((BigContainerPlayer)Minecraft.getMinecraft().thePlayer.inventoryContainer).scrollPos = 0;
 			((BigContainerPlayer)Minecraft.getMinecraft().thePlayer.inventoryContainer).UpdateScroll();
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onMouseInput(MouseInputEvent event)
+	{
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityPlayer player = mc.thePlayer;
+		KeyBinding pickBlock = mc.gameSettings.keyBindPickBlock;
+		
+		if(pickBlock.isPressed() && mc.objectMouseOver != null && II_Settings.invoSize > 27)
+		{
+			KeyBinding.setKeyBindState(pickBlock.getKeyCode(), false);
+			
+			if (!net.minecraftforge.common.ForgeHooks.onPickBlock(mc.objectMouseOver, player, mc.theWorld))
+			{
+				return;
+			}
+			
+			if(player.capabilities.isCreativeMode)
+			{
+                int j = 36 + player.inventory.currentItem;
+                mc.playerController.sendSlotPacket(player.inventory.getStackInSlot(player.inventory.currentItem), j);
+			}
 		}
 	}
 	
