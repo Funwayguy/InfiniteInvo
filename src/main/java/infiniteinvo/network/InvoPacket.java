@@ -70,26 +70,18 @@ public class InvoPacket implements IMessage
 						return null;
 					}
 					
-					boolean useItem = message.tags.getBoolean("UseItem") && player.getHeldItem() != null && player.getHeldItem().getItem() == InfiniteInvo.unlock;
 					int unlocked = player.getEntityData().getInteger("INFINITE_INVO_UNLOCKED");
 					int cost = II_Settings.unlockCost + (unlocked * II_Settings.unlockIncrease);
 					int totalXP = XPHelper.getPlayerXP(player);
 					
-					if(totalXP >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost)) || useItem)
+					if(totalXP >= (II_Settings.useOrbs? cost : XPHelper.getLevelXP(cost)))
 					{
-						if(!useItem)
+						if(II_Settings.useOrbs)
 						{
-							if(II_Settings.useOrbs)
-							{
-								XPHelper.AddXP(player, -cost);
-							} else
-							{
-								XPHelper.AddXP(player, -XPHelper.getLevelXP(cost));
-							}
-						} else if(!player.capabilities.isCreativeMode)
+							XPHelper.AddXP(player, -cost);
+						} else
 						{
-							player.getHeldItem().stackSize--;
-							player.setCurrentItemOrArmor(0, player.getHeldItem());
+							XPHelper.AddXP(player, -XPHelper.getLevelXP(cost));
 						}
 						
 						unlocked++;
