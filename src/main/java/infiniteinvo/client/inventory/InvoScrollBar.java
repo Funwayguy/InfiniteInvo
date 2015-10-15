@@ -13,6 +13,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -112,7 +113,7 @@ public class InvoScrollBar extends GuiButton
 			}
 		}
 		
-		container.detectAndSendChanges();
+		UpdateChanges(container);
 		
 		if(II_Settings.invoSize <= 27)
 		{
@@ -123,6 +124,23 @@ public class InvoScrollBar extends GuiButton
 		}
 		
 		return true;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void UpdateChanges(Container container)
+	{
+
+        for (int i = 0; i < container.inventorySlots.size(); ++i)
+        {
+            ItemStack itemstack = ((Slot)container.inventorySlots.get(i)).getStack();
+            ItemStack itemstack1 = (ItemStack)container.inventoryItemStacks.get(i);
+
+            if (!ItemStack.areItemStacksEqual(itemstack1, itemstack))
+            {
+                itemstack1 = itemstack == null ? null : itemstack.copy();
+                container.inventoryItemStacks.set(i, itemstack1);
+            }
+        }
 	}
 	
 	public boolean InitCreative()
