@@ -12,8 +12,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BigInventoryPlayer extends InventoryPlayer
 {
@@ -44,17 +44,6 @@ public class BigInventoryPlayer extends InventoryPlayer
 	{
 		super.dropAllItems();
 	}
-	
-	@Override
-	public void setInventorySlotContents(int slot, ItemStack stack) // TODO: Creative inventory middle click fix
-    {
-		/*if(this.player.capabilities.isCreativeMode && this.player.worldObj.isRemote)
-		{
-            Minecraft.getMinecraft().playerController.sendSlotPacket(stack, slot);
-		}*/
-		
-		super.setInventorySlotContents(slot, stack);
-    }
 	
 	public int getUnlockedSlots()
 	{
@@ -127,7 +116,7 @@ public class BigInventoryPlayer extends InventoryPlayer
     
     @SideOnly(Side.CLIENT)
     @Override
-    public void func_146030_a(Item p_146030_1_, int p_146030_2_, boolean p_146030_3_, boolean p_146030_4_)
+    public void setCurrentItem(Item p_146030_1_, int p_146030_2_, boolean p_146030_3_, boolean p_146030_4_)
     {
         this.currentItemStack = this.getCurrentItem();
         int k;
@@ -162,12 +151,11 @@ public class BigInventoryPlayer extends InventoryPlayer
     }
 
     @SideOnly(Side.CLIENT)
-    @Override
     public void func_70439_a(Item p_70439_1_, int p_70439_2_)
     {
         if (p_70439_1_ != null)
         {
-            if (this.currentItemStack != null && this.currentItemStack.isItemEnchantable() && this.func_146024_c(this.currentItemStack.getItem(), this.currentItemStack.getItemDamageForDisplay()) == this.currentItem)
+            if (this.currentItemStack != null && this.currentItemStack.isItemEnchantable() && this.func_146024_c(this.currentItemStack.getItem(), this.currentItemStack.getItemDamage()) == this.currentItem)
             {
                 return;
             }

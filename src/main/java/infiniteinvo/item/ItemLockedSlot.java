@@ -15,7 +15,7 @@ public class ItemLockedSlot extends Item
 	public ItemLockedSlot()
 	{
 		this.setMaxStackSize(1);
-		this.setTextureName("infiniteinvo:locked_slot");
+		//this.setTextureName("infiniteinvo:locked_slot");
 		this.setUnlocalizedName("infiniteinvo.LOCKED");
 	}
 	

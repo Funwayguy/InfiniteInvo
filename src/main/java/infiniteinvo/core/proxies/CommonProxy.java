@@ -5,8 +5,8 @@ import infiniteinvo.handlers.EventHandler;
 import infiniteinvo.handlers.II_UpdateNotification;
 import infiniteinvo.network.InvoPacket;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy
 {
@@ -15,6 +15,7 @@ public class CommonProxy
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void registerHandlers()
 	{
 		EventHandler handler = new EventHandler();
@@ -22,5 +23,9 @@ public class CommonProxy
 		FMLCommonHandler.instance().bus().register(handler);
 		FMLCommonHandler.instance().bus().register(new II_UpdateNotification());
     	InfiniteInvo.instance.network.registerMessage(InvoPacket.HandleServer.class, InvoPacket.class, 0, Side.SERVER);
+	}
+
+	public void registerRenderers()
+	{
 	}
 }

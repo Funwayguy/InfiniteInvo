@@ -38,13 +38,13 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Level;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.MouseInputEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.ItemPickupEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class EventHandler
 {
@@ -82,7 +82,7 @@ public class EventHandler
 			{
 				NBTTagCompound requestTags = new NBTTagCompound();
 				requestTags.setInteger("ID", 1);
-				requestTags.setInteger("World", event.world.provider.dimensionId);
+				requestTags.setInteger("World", event.world.provider.getDimensionId());
 				requestTags.setString("Player", player.getCommandSenderName());
 				InfiniteInvo.instance.network.sendToServer(new InvoPacket(requestTags));
 			} else
@@ -119,14 +119,14 @@ public class EventHandler
 	{
 		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone && !event.pickedUp.worldObj.isRemote)
 		{
-			if(!event.player.getCommandSenderName().equals(event.pickedUp.func_145800_j()));
+			if(!event.player.getCommandSenderName().equals(event.pickedUp.getThrower()));
 			{
-				if(event.pickedUp.func_145800_j() == null || event.pickedUp.func_145800_j().isEmpty())
+				if(event.pickedUp.getThrower() == null || event.pickedUp.getThrower().isEmpty())
 				{
 					return;
 				}
 				
-				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.func_145800_j());
+				EntityPlayer player = event.pickedUp.worldObj.getPlayerEntityByName(event.pickedUp.getThrower());
 				
 				if(player != null)
 				{
@@ -250,7 +250,6 @@ public class EventHandler
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onGuiPostInit(InitGuiEvent.Post event)
@@ -267,7 +266,7 @@ public class EventHandler
 			
 			if(event.gui instanceof GuiInventory)
 			{
-				final ScaledResolution scaledresolution = new ScaledResolution(event.gui.mc, event.gui.mc.displayWidth, event.gui.mc.displayHeight);
+				final ScaledResolution scaledresolution = new ScaledResolution(event.gui.mc);
                 int i = scaledresolution.getScaledWidth();
                 int j = scaledresolution.getScaledHeight();
 				event.buttonList.add(new GuiButtonUnlockSlot(event.buttonList.size(), i/2 - 50, j - 40, 100, 20, event.gui.mc.thePlayer));

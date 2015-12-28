@@ -15,11 +15,11 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.apache.logging.log4j.Level;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class InvoPacket implements IMessage
 {
@@ -48,7 +48,6 @@ public class InvoPacket implements IMessage
 	
 	public static class HandleServer implements IMessageHandler<InvoPacket,IMessage>
 	{
-		@SuppressWarnings("unchecked")
 		@Override
 		public IMessage onMessage(InvoPacket message, MessageContext ctx)
 		{

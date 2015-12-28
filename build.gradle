@@ -22,7 +22,7 @@ group= "infiniteinvo" // http://maven.apache.org/guides/mini/guide-naming-conven
 archivesBaseName = "InfiniteInvo"
 
 minecraft {
-    version = "1.7.10-10.13.2.1230"
+    version = "1.8.8-11.15.0.1635-1.8.8"
 }
 
 dependencies {

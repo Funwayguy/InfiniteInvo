@@ -1,5 +1,6 @@
 package infiniteinvo.client.inventory;
 
+import java.io.IOException;
 import infiniteinvo.core.II_Settings;
 import infiniteinvo.core.InfiniteInvo;
 import infiniteinvo.inventory.BigContainerPlayer;
@@ -39,7 +40,6 @@ public class GuiBigInventory extends GuiInventory
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui()
 	{
@@ -108,7 +108,7 @@ public class GuiBigInventory extends GuiInventory
         
         this.drawTexturedModalRect(k + 169 + (II_Settings.extraColumns * 18), l + 137 + (II_Settings.extraRows * 18), 187 + barW, 137, 16 - barW, 29);
         
-        func_147046_a(k + 51, l + 75, 30, (float)(k + 51) - (float)p_146976_2_, (float)(l + 75 - 50) - (float)p_146976_3_, this.mc.thePlayer);
+        drawEntityOnScreen(k + 51, l + 75, 30, (float)(k + 51) - (float)p_146976_2_, (float)(l + 75 - 50) - (float)p_146976_3_, this.mc.thePlayer);
         
         if(redoButtons)
         {
@@ -176,7 +176,7 @@ public class GuiBigInventory extends GuiInventory
 	 */
 	public int dragging = 0;
 	
-    public void handleMouseInput()
+    public void handleMouseInput() throws IOException
     {
     	super.handleMouseInput();
     	
@@ -192,7 +192,7 @@ public class GuiBigInventory extends GuiInventory
         		container.scrollPos -= scrollDir;
         	} else if(Mouse.isButtonDown(0))
         	{
-                final ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
+                final ScaledResolution scaledresolution = new ScaledResolution(this.mc);
                 int i = scaledresolution.getScaledWidth();
                 int j = scaledresolution.getScaledHeight();
                 int mouseX = Mouse.getX() * i / this.mc.displayWidth;

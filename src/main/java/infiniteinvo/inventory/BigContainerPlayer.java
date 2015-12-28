@@ -23,7 +23,6 @@ public class BigContainerPlayer extends ContainerPlayer
 	Slot[] crafting = new Slot[4];
 	Slot result;
 	
-	@SuppressWarnings("unchecked")
 	public BigContainerPlayer(BigInventoryPlayer invo, boolean isLocal, EntityPlayer player)
 	{
 		super(invo, isLocal, player);
@@ -97,7 +96,7 @@ public class BigContainerPlayer extends ContainerPlayer
 		if(slot == null)
 		{
 			Exception e = new NullPointerException();
-			InfiniteInvo.logger.log(Level.FATAL, e.getStackTrace()[1].getClassName() + "." + e.getStackTrace()[1].getMethodName() + ":" + e.getStackTrace()[1].getLineNumber() + " is requesting slot " + id + " from inventory " + invo.getInventoryName() + " (" + invo.getClass().getName() + ") and got NULL!", e);
+			InfiniteInvo.logger.log(Level.FATAL, e.getStackTrace()[1].getClassName() + "." + e.getStackTrace()[1].getMethodName() + ":" + e.getStackTrace()[1].getLineNumber() + " is requesting slot " + id + " from inventory " + invo.getCommandSenderName() + " (" + invo.getClass().getName() + ") and got NULL!", e);
 		}
 		return slot;
 	}

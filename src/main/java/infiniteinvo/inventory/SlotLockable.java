@@ -91,7 +91,7 @@ public class SlotLockable extends Slot
     }
 
     @Override
-    public boolean isSlotInInventory(IInventory p_75217_1_, int p_75217_2_)
+    public boolean isHere(IInventory p_75217_1_, int p_75217_2_)
     {
         return p_75217_1_ == this.inventory && p_75217_2_ == this.slotIndex;
     }

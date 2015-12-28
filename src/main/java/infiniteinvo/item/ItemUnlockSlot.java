@@ -18,7 +18,7 @@ public class ItemUnlockSlot extends Item
 	public ItemUnlockSlot()
 	{
 		this.setUnlocalizedName("infiniteinvo.unlock");
-		this.setTextureName("infiniteinvo:unlock_slot");
+		//this.setTextureName("infiniteinvo:unlock_slot");
 		this.setCreativeTab(CreativeTabs.tabMisc);
 	}
 	

@@ -60,7 +60,6 @@ public class InvoScrollBar extends GuiButton
 		UpdateGuiPos();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public boolean InitDefault()
 	{
 		if(refresh > 0)
@@ -126,10 +125,8 @@ public class InvoScrollBar extends GuiButton
 		return true;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void UpdateChanges(Container container)
 	{
-
         for (int i = 0; i < container.inventorySlots.size(); ++i)
         {
             ItemStack itemstack = ((Slot)container.inventorySlots.get(i)).getStack();
@@ -421,7 +418,7 @@ public class InvoScrollBar extends GuiButton
 			NBTTagCompound scrollTags = new NBTTagCompound();
 			scrollTags.setInteger("ID", 2);
 			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
-			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.worldObj.provider.dimensionId);
+			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.dimension);
 			scrollTags.setInteger("Scroll", scrollPos);
 			scrollTags.setIntArray("Indexes", slotIndex[0]);
 			scrollTags.setIntArray("Numbers", slotIndex[1]);
