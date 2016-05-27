@@ -58,7 +58,7 @@ public class GuiButtonUnlockSlot extends GuiButton
 			NBTTagCompound tags = new NBTTagCompound();
 			tags.setInteger("ID", 0);
 			tags.setInteger("World", player.dimension);
-			tags.setString("Player", player.getCommandSenderName());
+			tags.setString("Player", player.getName());
 			tags.setInteger("InvoSize", II_Settings.invoSize);
 			InfiniteInvo.instance.network.sendToServer(new InvoPacket(tags));
 		}

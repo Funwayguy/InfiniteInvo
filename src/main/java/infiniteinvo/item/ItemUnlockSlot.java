@@ -42,7 +42,7 @@ public class ItemUnlockSlot extends Item
 		unlocked++;
 		player.getEntityData().setInteger("INFINITE_INVO_UNLOCKED", unlocked);
 		
-		EventHandler.unlockCache.put(player.getCommandSenderName(), unlocked);
+		EventHandler.unlockCache.put(player.getName(), unlocked);
 		
 		if(unlocked > 0 || !II_Settings.xpUnlock)
 		{
@@ -58,7 +58,7 @@ public class ItemUnlockSlot extends Item
 		{
 			NBTTagCompound replyTags = new NBTTagCompound();
 			replyTags.setInteger("ID", 0);
-			replyTags.setString("Player", player.getCommandSenderName());
+			replyTags.setString("Player", player.getName());
 			replyTags.setInteger("Unlocked", unlocked);
 			InfiniteInvo.instance.network.sendTo(new InvoPacket(replyTags), (EntityPlayerMP)player);
 		}

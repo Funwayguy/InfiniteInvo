@@ -83,7 +83,7 @@ public class EventHandler
 				NBTTagCompound requestTags = new NBTTagCompound();
 				requestTags.setInteger("ID", 1);
 				requestTags.setInteger("World", event.world.provider.getDimensionId());
-				requestTags.setString("Player", player.getCommandSenderName());
+				requestTags.setString("Player", player.getName());
 				InfiniteInvo.instance.network.sendToServer(new InvoPacket(requestTags));
 			} else
 			{
@@ -119,7 +119,7 @@ public class EventHandler
 	{
 		if(event.pickedUp != null && event.pickedUp.getEntityItem() != null && event.pickedUp.getEntityItem().getItem() == Items.bone && !event.pickedUp.worldObj.isRemote)
 		{
-			if(!event.player.getCommandSenderName().equals(event.pickedUp.getThrower()));
+			if(!event.player.getName().equals(event.pickedUp.getThrower()));
 			{
 				if(event.pickedUp.getThrower() == null || event.pickedUp.getThrower().isEmpty())
 				{
@@ -178,9 +178,9 @@ public class EventHandler
 			
 			if(!event.entityLiving.isEntityAlive())
 			{
-				if(!II_Settings.keepUnlocks && !event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+				if(!II_Settings.keepUnlocks && !event.entityLiving.worldObj.getGameRules().getBoolean("keepInventory"))
 				{
-					unlockCache.remove(event.entityLiving.getCommandSenderName());
+					unlockCache.remove(event.entityLiving.getName());
 					unlockCache.remove(event.entityLiving.getUniqueID().toString());
 				}
 			}
@@ -197,13 +197,13 @@ public class EventHandler
 	{
 		if(event.entityLiving instanceof EntityPlayer)
 		{
-			if(!II_Settings.keepUnlocks && !event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+			if(!II_Settings.keepUnlocks && !event.entityLiving.worldObj.getGameRules().getBoolean("keepInventory"))
 			{
-				unlockCache.remove(event.entityLiving.getCommandSenderName());
+				unlockCache.remove(event.entityLiving.getName());
 				unlockCache.remove(event.entityLiving.getUniqueID().toString());
 			}
 			
-			if(!event.entityLiving.worldObj.isRemote && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+			if(!event.entityLiving.worldObj.isRemote && event.entityLiving.worldObj.getGameRules().getBoolean("keepInventory"))
 			{
 				InventoryPersistProperty.keepInvoCache.put(event.entityLiving.getUniqueID(), ((EntityPlayer)event.entityLiving).inventory.writeToNBT(new NBTTagList()));
 			}

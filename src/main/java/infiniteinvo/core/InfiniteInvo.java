@@ -25,7 +25,9 @@ import org.apache.logging.log4j.Logger;
 public class InfiniteInvo
 {
     public static final String MODID = "infiniteinvo";
-    public static final String VERSION = "II_VER_KEY";
+    public static final String VERSION = "CI_MOD_VERSION";
+    public static final String BRANCH = "CI_MOD_BRANCH";
+    public static final String HASH = "CI_MOD_HASH";
     public static final String NAME = "InfiniteInvo";
     public static final String PROXY = "infiniteinvo.core.proxies";
     public static final String CHANNEL = "I_INVO_CHAN";

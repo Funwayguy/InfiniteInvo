@@ -417,7 +417,7 @@ public class InvoScrollBar extends GuiButton
 			
 			NBTTagCompound scrollTags = new NBTTagCompound();
 			scrollTags.setInteger("ID", 2);
-			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getCommandSenderName());
+			scrollTags.setString("Player", Minecraft.getMinecraft().thePlayer.getName());
 			scrollTags.setInteger("World", Minecraft.getMinecraft().thePlayer.dimension);
 			scrollTags.setInteger("Scroll", scrollPos);
 			scrollTags.setIntArray("Indexes", slotIndex[0]);

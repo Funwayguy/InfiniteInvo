@@ -1,7 +1,9 @@
 package infiniteinvo.inventory;
 
 import infiniteinvo.core.II_Settings;
+import infiniteinvo.core.InfiniteInvo;
 import java.util.concurrent.Callable;
+import org.apache.logging.log4j.Level;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +40,18 @@ public class BigInventoryPlayer extends InventoryPlayer
 			this.armorInventory = oldArmor;
 		}
 	}
+	
+	@Override
+	public void setInventorySlotContents(int index, ItemStack stack)
+    {
+		if(index < 0 || index >= this.armorInventory.length + this.mainInventory.length)
+		{
+			InfiniteInvo.logger.log(Level.ERROR, "Tried to set item stack to invalid inventory slot index " + index, new IndexOutOfBoundsException());
+			return;
+		}
+		
+		super.setInventorySlotContents(index, stack);
+    }
 	
 	@Override
 	public void dropAllItems()
@@ -258,7 +272,7 @@ public class BigInventoryPlayer extends InventoryPlayer
     /**
      * Adds the item stack to the inventory, returns false if it is impossible.
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
     public boolean addItemStackToInventory(final ItemStack p_70441_1_)
     {

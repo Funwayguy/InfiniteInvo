@@ -1,0 +1,2 @@
+echo "Downloading dependencies..."
+curl -k -o make_logs https://gist.githubusercontent.com/Funwayguy/77d029fa7064ad9d82c52edfaeaba7f8/raw/infiniteinvo_make_log

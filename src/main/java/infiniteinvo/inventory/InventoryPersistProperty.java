@@ -72,7 +72,7 @@ public class InventoryPersistProperty implements IExtendedEntityProperties
 			{
 				player.inventory.readFromNBT(keepInvoCache.get(player.getUniqueID()));
 				keepInvoCache.remove(player.getUniqueID());
-			} else if(!player.isEntityAlive() && player.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory") && !keepInvoCache.containsKey(player.getUniqueID()))
+			} else if(!player.isEntityAlive() && player.worldObj.getGameRules().getBoolean("keepInventory") && !keepInvoCache.containsKey(player.getUniqueID()))
 			{
 				keepInvoCache.put(player.getUniqueID(), player.inventory.writeToNBT(new NBTTagList()));
 			}
