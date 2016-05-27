@@ -1,7 +1,9 @@
 package infiniteinvo.inventory;
 
 import infiniteinvo.core.II_Settings;
+import infiniteinvo.core.InfiniteInvo;
 import java.util.concurrent.Callable;
+import org.apache.logging.log4j.Level;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,14 +48,15 @@ public class BigInventoryPlayer extends InventoryPlayer
 	}
 	
 	@Override
-	public void setInventorySlotContents(int slot, ItemStack stack) // TODO: Creative inventory middle click fix
+	public void setInventorySlotContents(int index, ItemStack stack)
     {
-		/*if(this.player.capabilities.isCreativeMode && this.player.worldObj.isRemote)
+		if(index < 0 || index >= this.armorInventory.length + this.mainInventory.length)
 		{
-            Minecraft.getMinecraft().playerController.sendSlotPacket(stack, slot);
-		}*/
+			InfiniteInvo.logger.log(Level.ERROR, "Tried to set item stack to invalid inventory slot index " + index, new IndexOutOfBoundsException());
+			return;
+		}
 		
-		super.setInventorySlotContents(slot, stack);
+		super.setInventorySlotContents(index, stack);
     }
 	
 	public int getUnlockedSlots()

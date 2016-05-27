@@ -17,12 +17,12 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "II_VER_KEY"
+version = "CI_MOD_VERSION"
 group= "infiniteinvo" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "InfiniteInvo"
 
 minecraft {
-    version = "1.7.10-10.13.2.1230"
+    version = "1.7.10-10.13.4.1558-1.7.10"
 }
 
 dependencies {
